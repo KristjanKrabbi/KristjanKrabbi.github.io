@@ -76,7 +76,7 @@ function drawChart(labels, prices) {
                     }
                 },
                 y: {
-                    beginAtZero: false,
+                    beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Hind senti/KWh'
