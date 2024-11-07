@@ -3,10 +3,10 @@ async function fetchElectricityPrices() {
     const start = new Date(now.setMinutes(0, 0, 0));  // Alustame praegusest tunni algusest
     const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);  // Lõpeta 24 tunni pärast
     // console.log(start.toISOString())
-    // console.log(end.toISOString())
-    // const API_URL = `https://dashboard.elering.ee/api/nps/price?start=${start.toISOString()}&end=${end.toISOString()}`;
+    console.log(end.toISOString())
+    const API_URL = `https://dashboard.elering.ee/api/nps/price?start=${start.toISOString()}&end=${end.toISOString()}`;
     //  const API_URL = `https://dashboard.elering.ee/api/nps/price?start=2024-11-07T16%3A00%3A00.000Z&end=2024-11-08T16%3A00%3A00.000Z`  ;
-    const API_URL =`http://localhost:3000/proxy?start=${start.toISOString()}&end=${end.toISOString()}`
+    // const API_URL =`http://localhost:3000/proxy?start=${start.toISOString()}&end=${end.toISOString()}`
     try {
         // console.log(end.toISOString())
         // const response =await fetch(`http://localhost:3000/proxy?start=${start.toISOString()}&end=${end.toISOString()}`);
