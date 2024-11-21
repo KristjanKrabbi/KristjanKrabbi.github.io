@@ -201,10 +201,10 @@ footer {
     background-color: #2a2e43;
     color: #fff;
 }
-.col-6 {
+/* .col-6 {
     width: 50%;
     min-width: 140px;
-}
+} */
 .strong, strong, b {
     font-weight: 700;
 }
