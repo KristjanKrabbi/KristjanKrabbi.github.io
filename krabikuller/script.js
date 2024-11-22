@@ -1,6 +1,7 @@
-import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
 document.addEventListener('DOMContentLoaded', function () {
+ import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
  /*    const ordersList = document.getElementById('ordersList');
     const dbRef =  firebase.database().ref('orders'); // Firebase'i andmebaasi viide
 
