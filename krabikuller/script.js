@@ -1,32 +1,6 @@
-     //const module = require('module');
-    // window.onload = loadOrders;
-import { getDatabase, ref, set, get, child, push } from "https://krabikuller-default-rtdb.europe-west1.firebasedatabase.app";
-// import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-// // Your Firebase code here
-// const db = getDatabase();
-// const dbRef = ref(db);
-
-// // Example of setting data
-// set(ref(db, 'users/' + userId), {
-//   username: name,
-//   email: email,
-//   profile_picture: imageUrl
-// });
-
-// // Example of getting data
-// get(child(dbRef, `users/${userId}`)).then((snapshot) => {
-//   if (snapshot.exists()) {
-//     console.log(snapshot.val());
-//   } else {
-//     console.log("No data available");
-//   }
-// }).catch((error) => {
-//   console.error(error);
-// });
-//window.onload = loadOrders;
 document.addEventListener('DOMContentLoaded', function () {
-
+ import { getDatabase, ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
  /*    const ordersList = document.getElementById('ordersList');
     const dbRef =  firebase.database().ref('orders'); // Firebase'i andmebaasi viide
@@ -76,7 +50,7 @@ function loadOrders() {
 }
 
 // Laadige tellimused iga kord, kui leht laeb
- window.onload = loadOrders;
+window.onload = loadOrders;
 
 
     /* document.getElementById('orderForm').addEventListener('submit', function (e) {
