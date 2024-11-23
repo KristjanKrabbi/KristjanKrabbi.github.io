@@ -1,6 +1,7 @@
 //import ( './firebase.js');
 import { database } from './firebase.js';
-import ("https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js");
+import { ref, set, push, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+//import ("https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js");
 document.addEventListener('DOMContentLoaded', function () {
  /*    const ordersList = document.getElementById('ordersList');
     const dbRef =  firebase.database().ref('orders'); // Firebase'i andmebaasi viide
