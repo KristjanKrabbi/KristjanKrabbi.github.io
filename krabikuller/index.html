@@ -8,6 +8,7 @@
     <script type="module" src="firebase.js"></script>
 </head>
 <body>
+    
     <div class="container">
         <h1>Toidutellimused</h1>
         <form id="orderForm">
@@ -19,6 +20,16 @@
         </form>
         <h2>Tellimused:</h2>
         <ul id="ordersList"></ul>
+    </div>
+    <div id="adminPanel" style="display: none;">
+        <button id="downloadOrders">Laadi tellimused alla</button>
+        <button id="clearOrders">Kustuta kõik tellimused</button>
+    </div>
+    
+    <div id="loginPanel">
+        <label for="adminPassword">Sisesta parool:</label>
+        <input type="password" id="adminPassword" placeholder="Parool">
+        <button id="loginButton">Logi sisse</button>
     </div>
     
     <script type="module"  src="script.js"></script>

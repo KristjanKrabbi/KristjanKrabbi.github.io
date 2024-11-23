@@ -40,6 +40,49 @@ function loadOrders() {
         }
     });
 }
+const adminPassword = "salajane123"; // Siin saad määrata parooli
+
+document.getElementById('loginButton').addEventListener('click', () => {
+    const inputPassword = document.getElementById('adminPassword').value;
+    if (inputPassword === adminPassword) {
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('loginPanel').style.display = 'none';
+    } else {
+        alert('Vale parool!');
+    }
+});
+document.getElementById('downloadOrders').addEventListener('click', () => {
+    const ordersRef = ref(database, 'orders');
+    get(ordersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const orders = snapshot.val();
+            const blob = new Blob([JSON.stringify(orders, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tellimused_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            alert('Pole midagi alla laadida!');
+        }
+    }).catch((error) => {
+        console.error('Allalaadimisviga:', error);
+    });
+});
+document.getElementById('clearOrders').addEventListener('click', () => {
+    const confirmDelete = confirm('Kas oled kindel, et soovid kõik tellimused kustutada?');
+    if (confirmDelete) {
+        const ordersRef = ref(database, 'orders');
+        set(ordersRef, null).then(() => {
+            alert('Kõik tellimused kustutatud!');
+            loadOrders(); // Uuenda kuvamist
+        }).catch((error) => {
+            console.error('Kustutamisviga:', error);
+        });
+    }
+});
 
 // Laadi tellimused esmakordselt
 window.onload = loadOrders;
