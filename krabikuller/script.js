@@ -127,7 +127,7 @@ document.getElementById('sendEmail').addEventListener('click', () => {
             message += '</table>';
 
             // Saada EmailJS-iga
-            emailjs.send("service_unpiobp", "template_fmi1tti", {
+            emailjs.send("service_unpiobp", "template_bgww7mf", {
                 message: message,
                 to_email: "krabypoiss@hotmail.com"
             }).then(() => {
