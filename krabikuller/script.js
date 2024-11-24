@@ -1,6 +1,7 @@
 // Import Firebase'i andmebaasi
 import { database } from './firebase.js';
 import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+emailjs.init("ZnwTu7PhJzoEdIKU7"); // Kasuta EmailJS-i kasutajatunnust.
 
 // Tellimuse salvestamine
 document.getElementById('orderForm').addEventListener('submit', function (e) {
@@ -14,8 +15,9 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
         const newOrderRef = push(ordersRef);
         set(newOrderRef, { name: name, order: order })
             .then(() => {
+                alert("Tellimus salvestatud!")
                 console.log("Tellimus salvestatud!");
-                loadOrders(); // Laadi tellimused uuesti
+                // loadOrders(); // Laadi tellimused uuesti
             })
             .catch((error) => console.error("Salvestusviga:", error));
     }
@@ -47,6 +49,7 @@ document.getElementById('loginButton').addEventListener('click', () => {
     if (inputPassword === adminPassword) {
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('loginPanel').style.display = 'none';
+        loadOrders(); // Laadi tellimused uuesti
     } else {
         alert('Vale parool!');
     }
@@ -83,6 +86,27 @@ document.getElementById('clearOrders').addEventListener('click', () => {
         });
     }
 });
+document.getElementById('sendEmail').addEventListener('click', () => {
+    const ordersRef = ref(database, 'orders');
+    get(ordersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const orders = snapshot.val();
+            const ordersJson = JSON.stringify(orders, null, 2);
+
+            // Saada EmailJS-iga
+            emailjs.send("service_unpiobp", "template_fmi1tti", {
+                message: ordersJson,
+                to_email: "krabypoiss@hotmail.com" // Saaja e-post
+            }).then(() => {
+                alert("E-post saadetud!");
+            }).catch((error) => {
+                console.error("Viga e-posti saatmisel:", error);
+            });
+        } else {
+            alert('Pole midagi saata!');
+        }
+    });
+});
 
 // Laadi tellimused esmakordselt
-window.onload = loadOrders;
+//window.onload = loadOrders;

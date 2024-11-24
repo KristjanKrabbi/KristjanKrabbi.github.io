@@ -24,15 +24,18 @@
     <div id="adminPanel" style="display: none;">
         <button id="downloadOrders">Laadi tellimused alla</button>
         <button id="clearOrders">Kustuta kõik tellimused</button>
+        <button id="sendEmail">Saada e-postiga</button>
+
     </div>
     
     <div id="loginPanel">
         <label for="adminPassword">Sisesta parool:</label>
         <input type="password" id="adminPassword" placeholder="Parool">
         <button id="loginButton">Logi sisse</button>
+        
     </div>
     
     <script type="module"  src="script.js"></script>
-
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </body>
 </html>
