@@ -127,9 +127,9 @@ document.getElementById('sendEmail').addEventListener('click', () => {
             message += '</table>';
 
             // Saada EmailJS-iga
-            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+            emailjs.send("service_unpiobp", "template_fmi1tti", {
                 message: message,
-                to_email: "your_email@example.com"
+                to_email: "krabypoiss@hotmail.com"
             }).then(() => {
                 alert("E-post saadetud!");
             }).catch((error) => {
