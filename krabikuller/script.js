@@ -64,11 +64,22 @@ document.getElementById('downloadOrders').addEventListener('click', () => {
     get(ordersRef).then((snapshot) => {
         if (snapshot.exists()) {
             const orders = snapshot.val();
-            const blob = new Blob([JSON.stringify(orders, null, 2)], { type: 'application/json' });
+            
+            //const blob = new Blob([JSON.stringify(orders, null, 2)], { type: 'application/json' });
+
+            const today = new Date().toLocaleDateString();
+            let ordersText = `Toidutellimused (${today}):\n\n`;
+
+            for (const key in orders) {
+                const order = orders[key];
+                ordersText += `${order.name}: ${order.order}\n`;
+            }
+            const blob = new Blob(ordersText, { type: 'text/csv' });
+
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `tellimused_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `tellimused_${new Date().toISOString().slice(0, 10)}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
