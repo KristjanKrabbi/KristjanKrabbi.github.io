@@ -2,11 +2,11 @@
 import { database } from './firebase.js';
 import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-/* (function () {
+(function(){
     emailjs.init({
-      publicKey: '-gdcP4QMdCn-ac1Pi',
+      publicKey: "-gdcP4QMdCn-ac1Pi",
     });
-  })(); */
+ })();
 
 // Tellimuse salvestamine
 document.getElementById('orderForm').addEventListener('submit', function (e) {
@@ -91,7 +91,7 @@ document.getElementById('clearOrders').addEventListener('click', () => {
         });
     }
 });
-document.getElementById('sendEmail').addEventListener('click', () => {
+/* document.getElementById('sendEmail').addEventListener('click', () => {
     const ordersRef = ref(database, 'orders');
     get(ordersRef).then((snapshot) => {
         if (snapshot.exists()) {
@@ -102,6 +102,34 @@ document.getElementById('sendEmail').addEventListener('click', () => {
             emailjs.send("service_unpiobp", "template_fmi1tti", {
                 message: ordersJson,
                 to_email: "krabypoiss@hotmail.com" // Saaja e-post
+            }).then(() => {
+                alert("E-post saadetud!");
+            }).catch((error) => {
+                console.error("Viga e-posti saatmisel:", error);
+            });
+        } else {
+            alert('Pole midagi saata!');
+        }
+    });
+}); */
+document.getElementById('sendEmail').addEventListener('click', () => {
+    const ordersRef = ref(database, 'orders');
+    get(ordersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const orders = snapshot.val();
+            
+            // Vorminda tellimused tabeliks
+            let message = '<table border="1" style="border-collapse: collapse; width: 100%;">';
+            message += '<tr><th>Nimi</th><th>Tellimus</th></tr>';
+            for (const key in orders) {
+                message += `<tr><td>${orders[key].name}</td><td>${orders[key].order}</td></tr>`;
+            }
+            message += '</table>';
+
+            // Saada EmailJS-iga
+            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                message: message,
+                to_email: "your_email@example.com"
             }).then(() => {
                 alert("E-post saadetud!");
             }).catch((error) => {
