@@ -127,10 +127,11 @@ document.getElementById('sendEmail').addEventListener('click', () => {
             message += '</table>';
 
             // Saada EmailJS-iga
-            emailjs.send("service_unpiobp", "template_bgww7mf", {
-                message: message,
-                to_email: "krabypoiss@hotmail.com"
-            }).then(() => {
+            emailjs.send("service_unpiobp", "template_bgww7mf", message,
+                //{message: message,
+                {to_email: "krabypoiss@hotmail.com"
+            }
+        ).then(() => {
                 alert("E-post saadetud!");
             }).catch((error) => {
                 console.error("Viga e-posti saatmisel:", error);
