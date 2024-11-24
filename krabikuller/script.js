@@ -2,8 +2,7 @@
 import { database } from './firebase.js';
 import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-(function(){emailjs.init({publicKey: "-gdcP4QMdCn-ac1Pi",
-    });
+(function(){emailjs.init("-gdcP4QMdCn-ac1Pi" );
  })();
 
 // Tellimuse salvestamine
