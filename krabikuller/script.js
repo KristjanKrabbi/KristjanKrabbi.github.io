@@ -1,7 +1,10 @@
 // Import Firebase'i andmebaasi
 import { database } from './firebase.js';
 import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-emailjs.init("ZnwTu7PhJzoEdIKU7"); // Kasuta EmailJS-i kasutajatunnust.
+
+(function(){emailjs.init({publicKey: "ZnwTu7PhJzoEdIKU7",
+    });
+ })();
 
 // Tellimuse salvestamine
 document.getElementById('orderForm').addEventListener('submit', function (e) {
