@@ -74,7 +74,7 @@ document.getElementById('downloadOrders').addEventListener('click', () => {
                 const order = orders[key];
                 ordersText += `${order.name}: ${order.order}\n`;
             }
-            const blob = new Blob(ordersText, { type: 'text/csv' });
+            const blob = new Blob([ordersText], { type: 'text/csv' });
 
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
