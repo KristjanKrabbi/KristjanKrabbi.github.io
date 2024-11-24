@@ -112,7 +112,8 @@ document.getElementById('clearOrders').addEventListener('click', () => {
         }
     });
 }); */
-document.getElementById('sendEmail').addEventListener('click', () => {
+
+/* document.getElementById('sendEmail').addEventListener('click', () => {
     const ordersRef = ref(database, 'orders');
     get(ordersRef).then((snapshot) => {
         if (snapshot.exists()) {
@@ -130,6 +131,36 @@ document.getElementById('sendEmail').addEventListener('click', () => {
             emailjs.send("service_unpiobp", "template_bgww7mf", {
                 message: message,
                 to_email: "krabypoiss@hotmail.com"
+            }).then(() => {
+                alert("E-post saadetud!");
+            }).catch((error) => {
+                console.error("Viga e-posti saatmisel:", error);
+            });
+        } else {
+            alert('Pole midagi saata!');
+        }
+    });
+}); */
+
+document.getElementById('sendEmail').addEventListener('click', () => {
+    const ordersRef = ref(database, 'orders');
+    get(ordersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const orders = snapshot.val();
+
+            // Muudame tellimused loeteluks
+            const today = new Date().toLocaleDateString();
+            let ordersText = `Toidutellimused (${today}):\n\n`;
+
+            for (const key in orders) {
+                const order = orders[key];
+                ordersText += `${order.name}: ${order.order}\n`;
+            }
+
+            // Saada EmailJS-iga
+            emailjs.send("service_unpiobp", "template_bgww7mf", {
+                message: ordersText,
+                to_email: "krabypoiss@hotmail.com" // Saaja e-post
             }).then(() => {
                 alert("E-post saadetud!");
             }).catch((error) => {
