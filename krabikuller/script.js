@@ -18,7 +18,8 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
     if (name && order) {
         const ordersRef = ref(database, 'orders');
         const newOrderRef = push(ordersRef);
-        set(newOrderRef, { name: name, order: order })
+        const timestamp = new Date().toISOString(); // Ajatempli formaat: "2024-11-23T12:34:56.789Z"
+        set(newOrderRef, { name: name, order: order ,timestamp: timestamp })
             .then(() => {
                 alert("Tellimus salvestatud!")
                 console.log("Tellimus salvestatud!");
@@ -39,7 +40,8 @@ function loadOrders() {
             for (const key in orders) {
                 const order = orders[key];
                 const listItem = document.createElement('li');
-                listItem.textContent = `${order.name}: ${order.order}`;
+                const time = new Date(order.timestamp).toLocaleString(); // Inimloetav kuupäev ja kellaaeg
+                listItem.textContent = `${order.name}: ${order.order} (${time})`;
                 ordersList.appendChild(listItem);
             }
         } else {
@@ -102,56 +104,39 @@ document.getElementById('clearOrders').addEventListener('click', () => {
         });
     }
 });
-/* document.getElementById('sendEmail').addEventListener('click', () => {
-    const ordersRef = ref(database, 'orders');
-    get(ordersRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const orders = snapshot.val();
-            const ordersJson = JSON.stringify(orders, null, 2);
+document.getElementById('clearByDate').addEventListener('click', () => {
+    const targetDate = prompt("Sisesta kuupäev (YYYY-MM-DD), mida soovid kustutada:");
 
-            // Saada EmailJS-iga
-            emailjs.send("service_unpiobp", "template_fmi1tti", {
-                message: ordersJson,
-                to_email: "krabypoiss@hotmail.com" // Saaja e-post
-            }).then(() => {
-                alert("E-post saadetud!");
-            }).catch((error) => {
-                console.error("Viga e-posti saatmisel:", error);
-            });
-        } else {
-            alert('Pole midagi saata!');
-        }
-    });
-}); */
+    if (targetDate) {
+        const ordersRef = ref(database, 'orders');
+        get(ordersRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const orders = snapshot.val();
 
-/* document.getElementById('sendEmail').addEventListener('click', () => {
-    const ordersRef = ref(database, 'orders');
-    get(ordersRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const orders = snapshot.val();
-            
-            // Vorminda tellimused tabeliks
-            let message = '<table border="1" style="border-collapse: collapse; width: 100%;">';
-            message += '<tr><th>Nimi</th><th>Tellimus</th></tr>';
-            for (const key in orders) {
-                message += `<tr><td>${orders[key].name}</td><td>${orders[key].order}</td></tr>`;
+                // Filtreeri tellimused kuupäeva alusel
+                const filteredOrders = Object.keys(orders).reduce((result, key) => {
+                    const order = orders[key];
+                    const orderDate = new Date(order.timestamp).toISOString().split('T')[0]; // Ainult kuupäev
+                    if (orderDate !== targetDate) {
+                        result[key] = order; // Hoia alles kõik, mis ei vasta sihtkuupäevale
+                    }
+                    return result;
+                }, {});
+
+                // Salvesta uuesti andmebaasi
+                set(ordersRef, filteredOrders)
+                    .then(() => {
+                        alert(`Kustutatud tellimused kuupäevalt: ${targetDate}`);
+                        loadOrders();
+                    })
+                    .catch((error) => console.error("Kustutamisviga:", error));
+            } else {
+                alert("Pole midagi kustutada.");
             }
-            message += '</table>';
+        });
+    }
+});
 
-            // Saada EmailJS-iga
-            emailjs.send("service_unpiobp", "template_bgww7mf", {
-                message: message,
-                to_email: "krabypoiss@hotmail.com"
-            }).then(() => {
-                alert("E-post saadetud!");
-            }).catch((error) => {
-                console.error("Viga e-posti saatmisel:", error);
-            });
-        } else {
-            alert('Pole midagi saata!');
-        }
-    });
-}); */
 
 document.getElementById('sendEmail').addEventListener('click', () => {
     const ordersRef = ref(database, 'orders');
@@ -165,7 +150,8 @@ document.getElementById('sendEmail').addEventListener('click', () => {
 
             for (const key in orders) {
                 const order = orders[key];
-                ordersText += `${order.name}: ${order.order}\n`;
+                const time = new Date(order.timestamp).toLocaleString(); // Inimloetav kuupäev ja kellaaeg
+                ordersText += `${order.name}: ${order.order} (${time})\n`;
             }
 
             // Saada EmailJS-iga
