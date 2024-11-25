@@ -50,7 +50,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
     }
 });
 
-document.getElementById('refreshOrdrers').addEventListener('click', () => {
+document.getElementById('refreshOrdrers').addEventListener('click', function (e) {
     loadOrders()
 });
 // Tellimuste laadimine ja kuvamine
