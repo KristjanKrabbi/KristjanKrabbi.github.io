@@ -116,7 +116,8 @@ document.getElementById('clearByDate').addEventListener('click', () => {
                 // Filtreeri tellimused kuupäeva alusel
                 const filteredOrders = Object.keys(orders).reduce((result, key) => {
                     const order = orders[key];
-                    const orderDate = new Date(order.timestamp).toISOString().split('T')[0]; // Ainult kuupäev
+                    const orderDate = new Date(order.timestamp).toISOString().split('T')[0]; // Ainult kuupäev\
+                    console.log(orderDate)
                     if (orderDate !== targetDate) {
                         result[key] = order; // Hoia alles kõik, mis ei vasta sihtkuupäevale
                     }
