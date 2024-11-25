@@ -18,17 +18,41 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
     if (name && order) {
         const ordersRef = ref(database, 'orders');
         const newOrderRef = push(ordersRef);
-        const timestamp = new Date().toISOString(); // Ajatempli formaat: "2024-11-23T12:34:56.789Z"
-        set(newOrderRef, { name: name, order: order ,timestamp: timestamp })
+
+        // Lisa ajatempel
+        const timestamp = new Date().toISOString();
+
+        // Salvesta tellimus andmebaasi
+        set(newOrderRef, { name, order, timestamp })
             .then(() => {
-                alert("Tellimus salvestatud!")
                 console.log("Tellimus salvestatud!");
-                // loadOrders(); // Laadi tellimused uuesti
+
+                // Lisa toidunimi eraldi nimekirja
+                const foodNamesRef = ref(database, 'foodNames');
+                get(foodNamesRef).then((snapshot) => {
+                    const existingFoodNames = snapshot.exists() ? snapshot.val() : {};
+
+                    // Kontrolli, kas toit on juba olemas
+                    if (!Object.values(existingFoodNames).includes(order)) {
+                        const newFoodRef = push(foodNamesRef);
+                        set(newFoodRef, order).then(() => {
+                            console.log("Toidunimi lisatud eraldi nimekirja.");
+                            loadFoodSuggestions(); // Uuenda soovitusi
+                        });
+                    }
+                }).catch((error) => {
+                    console.error("Viga toidunime lisamisel:", error);
+                });
+
+                loadOrders(); // Laadib uuesti tellimused
             })
             .catch((error) => console.error("Salvestusviga:", error));
     }
 });
 
+document.getElementById('refreshOrdrers').addEventListener('click', () => {
+    loadOrders()
+});
 // Tellimuste laadimine ja kuvamine
 function loadOrders() {
     const ordersRef = ref(database, 'orders');
@@ -49,6 +73,32 @@ function loadOrders() {
         }
     });
 }
+function loadFoodSuggestions() {
+    const foodNamesRef = ref(database, 'foodNames');
+    get(foodNamesRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const foodNames = snapshot.val();
+
+            // Lisa toidunimed <datalist> elementi
+            const suggestionsList = document.getElementById('foodSuggestions');
+            suggestionsList.innerHTML = ''; // Puhasta olemasolevad soovitused
+            Object.values(foodNames).forEach(food => {
+                const option = document.createElement('option');
+                option.value = food; // Toidunimi
+                suggestionsList.appendChild(option);
+            });
+        }
+    }).catch((error) => {
+        console.error("Viga toidusoovituste laadimisel:", error);
+    });
+}
+
+// Kutsu funktsiooni lehe laadimisel
+window.onload = () => {
+    //loadOrders(); // Laadib tellimuste nimekirja
+    loadFoodSuggestions(); // Laadib toidusoovitused
+};
+
 const adminPassword = "salajane123"; // Siin saad määrata parooli
 
 document.getElementById('loginButton').addEventListener('click', () => {
@@ -116,10 +166,15 @@ document.getElementById('clearByDate').addEventListener('click', () => {
                 // Filtreeri tellimused kuupäeva alusel
                 const filteredOrders = Object.keys(orders).reduce((result, key) => {
                     const order = orders[key];
-                    const orderDate = new Date(order.timestamp).toISOString().split('T')[0]; // Ainult kuupäev\
-                    console.log(orderDate)
+
+                    // Kontrolli ja teisenda kuupäev
+                    const orderDate = order.timestamp && !isNaN(new Date(order.timestamp))
+                        ? new Date(order.timestamp).toISOString().split('T')[0]
+                        : null;
+
+                    // Kui kuupäev ei vasta, jäta tellimus alles
                     if (orderDate !== targetDate) {
-                        result[key] = order; // Hoia alles kõik, mis ei vasta sihtkuupäevale
+                        result[key] = order;
                     }
                     return result;
                 }, {});
@@ -137,6 +192,7 @@ document.getElementById('clearByDate').addEventListener('click', () => {
         });
     }
 });
+
 
 
 document.getElementById('sendEmail').addEventListener('click', () => {

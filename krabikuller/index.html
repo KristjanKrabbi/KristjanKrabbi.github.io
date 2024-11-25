@@ -15,13 +15,16 @@
             <label for="name">Nimi:</label>
             <input type="text" id="name" placeholder="Sinu nimi" required>
             <label for="order">Tellimus:</label>
-            <input type="text" id="order" placeholder="Mida soovid süüa?" required>
+<input type="text" id="order" list="foodSuggestions" placeholder="Mida soovid süüa?" required>
+<datalist id="foodSuggestions"></datalist>
+
             <button type="submit">Esita tellimus</button>
         </form>
         <h2>Tellimused:</h2>
         <ul id="ordersList"></ul>
     </div>
     <div id="adminPanel" style="display: none;">
+        <button id="refreshOrdrers">Värskenda tellimusi</button>
         <button id="downloadOrders">Laadi tellimused alla</button>
         <button id="clearOrders">Kustuta kõik tellimused</button>
         <button id="sendEmail">Saada e-postiga</button>
