@@ -10,7 +10,7 @@ import { ref, push, set, get } from "https://www.gstatic.com/firebasejs/11.0.2/f
  document.getElementById('menu__button').addEventListener("click", function (event) {
     document.getElementById('main_menu').classList.toggle('active') 
 
-    document.getElementById('loginPanel').children.toggle('active') 
+    document.getElementById('loginPanel').classList.toggle('active') 
     console.log("tore");
 })   
 // Tellimuse salvestamine

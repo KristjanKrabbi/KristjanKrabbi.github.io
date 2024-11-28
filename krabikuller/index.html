@@ -20,31 +20,26 @@
                   <span></span>
                   <span></span>
                 </button>
-                <ul class="menu__list" id="main_menu">
+               <!--  <div id="loginPanel" class="menu__list" >
+                    <label for="adminPassword">Sisesta parool:</label>
+                    <input type="password" id="adminPassword" placeholder="Parool" >
+                    <button id="loginButton">Logi sisse</button>
                     
-                  <li class="menu__item">
-                    <a href="#">nupp1</a>
-                  </li>
-                  <li class="menu__item">
-                    <a href="#">nupp2</a>
-                  </li>
-                  <li class="menu__item">
-                    <a href="#">nupp3</a>
-                  </li>
-                  <li class="menu__item">
-                    <a href="#">nupp4</a>
-                  </li>
-                  <li class="menu__item">
-                    <a href="#">nupp5</a>
-                  </li>
-                  <li class="menu__item">
-                    <a href="#">nupp6</a>
-                  </li>
+                </div> -->
+                <ul class="menu__list" id="main_menu">
+                    <div id="adminPanel" style="display: none;">
+                    <button id="refreshOrdrers">Värskenda tellimusi</button>
+        <button id="downloadOrders">Laadi tellimused alla</button>
+        <button id="clearOrders">Kustuta kõik tellimused</button>
+        <button id="sendEmail">Saada e-postiga</button>
+        <button id="clearByDate">Kustuta kuupäeva järgi</button>
+        </div>
+                  
                 </ul>
               </nav>
               
             </div>
-            <div id="loginPanel">
+            <div id="loginPanel" class="menu__list">
                 <label for="adminPassword">Sisesta parool:</label>
                 <input type="password" id="adminPassword" placeholder="Parool" >
                 <button id="loginButton">Logi sisse</button>
@@ -90,7 +85,7 @@
         <h2>Tellimused:</h2>
         <ul id="ordersList"></ul>
     </div>
-    <div id="adminPanel" style="display: none;">
+    <!-- <div id="adminPanel" style="display: none;">
         <button id="refreshOrdrers">Värskenda tellimusi</button>
         <button id="downloadOrders">Laadi tellimused alla</button>
         <button id="clearOrders">Kustuta kõik tellimused</button>
@@ -104,7 +99,7 @@
         <input type="password" id="adminPassword" placeholder="Parool" >
         <button id="loginButton">Logi sisse</button>
         
-    </div>
+    </div> -->
 </main>
     <script type="module"  src="script.js"></script>
     <script type="text/javascript"
