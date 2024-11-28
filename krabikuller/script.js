@@ -123,7 +123,7 @@ function loadFoodSuggestions() {
 
 // Kutsu funktsiooni lehe laadimisel
 window.onload = () => {
-    //loadOrders(); // Laadib tellimuste nimekirja
+    loadTodayOrders(); // Laadib tellimuste nimekirja
     loadFoodSuggestions(); // Laadib toidusoovitused
 };
 
@@ -255,4 +255,4 @@ document.getElementById('sendEmail').addEventListener('click', () => {
 });
 
 // Laadi tellimused esmakordselt
-window.onload = loadTodayOrders;
+//window.onload = loadTodayOrders;
