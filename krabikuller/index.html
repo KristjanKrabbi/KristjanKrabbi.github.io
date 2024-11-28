@@ -9,7 +9,68 @@
     <script type="module" src="firebase.js"></script>
 </head>
 <body>
-    
+    <header>
+        
+          <div class="row row--header">
+            
+            <div class="item">
+              <nav class="menu menu--main menu--horisontal">
+                <button class="menu__button" id="menu__button">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </button>
+               <!--  <div id="loginPanel" class="menu__list" >
+                    <label for="adminPassword">Sisesta parool:</label>
+                    <input type="password" id="adminPassword" placeholder="Parool" >
+                    <button id="loginButton">Logi sisse</button>
+                    
+                </div> -->
+                <ul class="menu__list" id="main_menu">
+                    <div id="adminPanel" style="display: none;">
+                    <button id="refreshOrdrers">Värskenda tellimusi</button>
+        <button id="downloadOrders">Laadi tellimused alla</button>
+        <button id="clearOrders">Kustuta kõik tellimused</button>
+        <button id="sendEmail">Saada e-postiga</button>
+        <button id="clearByDate">Kustuta kuupäeva järgi</button>
+        </div>
+                  
+                </ul>
+              </nav>
+              
+            </div>
+            <div id="loginPanel" class="menu__list">
+                <label for="adminPassword">Sisesta parool:</label>
+                <input type="password" id="adminPassword" placeholder="Parool" >
+                <button id="loginButton">Logi sisse</button>
+                
+            </div>
+            <div class="item">
+                <a
+                  href="https://kristjankrabbi.github.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img src="../photos/KK.ico" sizes="72x72" type="image/x-icon" alt="logo" />
+                </a>
+              </div>
+            <div class="item">
+              <nav class="menu menu--horisontal">
+                <ul class="menu__list">
+                  <li class="menu__item">
+                    <a href="#">nupp11</a>
+                  </li>
+                  <li class="menu__item">
+                    <a href="#">nupp12</a>
+                  </li>
+                </ul>
+              </nav>
+              
+            </div>
+          </div>
+        
+      </header>
+      <main>
     <div class="container">
         <h1>Toidutellimused</h1>
         <form id="orderForm">
@@ -24,7 +85,7 @@
         <h2>Tellimused:</h2>
         <ul id="ordersList"></ul>
     </div>
-    <div id="adminPanel" style="display: none;">
+    <!-- <div id="adminPanel" style="display: none;">
         <button id="refreshOrdrers">Värskenda tellimusi</button>
         <button id="downloadOrders">Laadi tellimused alla</button>
         <button id="clearOrders">Kustuta kõik tellimused</button>
@@ -38,8 +99,8 @@
         <input type="password" id="adminPassword" placeholder="Parool" >
         <button id="loginButton">Logi sisse</button>
         
-    </div>
-    
+    </div> -->
+</main>
     <script type="module"  src="script.js"></script>
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">

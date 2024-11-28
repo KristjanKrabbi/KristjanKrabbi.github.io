@@ -14,7 +14,70 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+.row--header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+  }
+  .menu__button span{
+    border-bottom: 1px solid darkgray;
+    width: 30px;
+    display: block;
+    margin: 10px 0;
+}
+.menu__button {
+    background-color: transparent;
+    border: none;
+}
+.menu--main ul.menu__list {
+    display: none;
+}
+.row--header .menu__list{
+    display: none;
+}
+.row--header .menu__list.active{
+    display: block;
+}
+.menu--main ul.menu__list.active {
+    display: block;
+}
 
+nav.menu.menu--main.menu--horisontal {
+    position: relative;
+}
+.menu--main .menu__list {
+    display: none;
+  
+  }
+
+  .menu--main .menu__list.active {
+    display: block; 
+  }
+ul#main_menu {
+    position: absolute;
+    background: white;
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
+  @media  (min-width:900px) {
+    .menu__button {
+    display: none;
+}
+
+.menu--main ul.menu__list {
+    display: flex;
+}
+ul#main_menu {
+    position: static;
+}
+.row--header .menu__list{
+    display: block;
+}  
+}
 h1, h2 {
     text-align: center;
     color: #444;
