@@ -44,14 +44,14 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
                     console.error("Viga toidunime lisamisel:", error);
                 });
 
-                loadOrders(); // Laadib uuesti tellimused
+                loadTodayOrders(); // Laadib uuesti tellimused
             })
             .catch((error) => console.error("Salvestusviga:", error));
     }
 });
 
 document.getElementById('refreshOrdrers').addEventListener('click', function (e) {
-    loadOrders()
+    loadTodayOrders()
 });
 // Tellimuste laadimine ja kuvamine
 function loadOrders() {
@@ -73,6 +73,34 @@ function loadOrders() {
         }
     });
 }
+function loadTodayOrders() {
+    const ordersRef = ref(database, 'orders');
+    get(ordersRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const orders = snapshot.val();
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = ''; // Puhasta olemasolev nimekiri
+
+            // Praegune kuupäev formaadis YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
+
+            // Läbi tellimused ja lisa ainult tänased
+            for (const key in orders) {
+                const order = orders[key];
+                const orderDate = new Date(order.timestamp).toISOString().split('T')[0];
+                if (orderDate === today) {
+                    const listItem = document.createElement('li');
+                    const time = new Date(order.timestamp).toLocaleTimeString(); // Ainult kellaaeg
+                    listItem.textContent = `${order.name}: ${order.order} (${time})`;
+                    ordersList.appendChild(listItem);
+                }
+            }
+        } else {
+            console.log("Tellimusi pole.");
+        }
+    });
+}
+
 function loadFoodSuggestions() {
     const foodNamesRef = ref(database, 'foodNames');
     get(foodNamesRef).then((snapshot) => {
@@ -227,4 +255,4 @@ document.getElementById('sendEmail').addEventListener('click', () => {
 });
 
 // Laadi tellimused esmakordselt
-//window.onload = loadOrders;
+window.onload = loadTodayOrders;
