@@ -1,31 +1,30 @@
 <!DOCTYPE html>
-<html lang="et-EE" ng-app="elhind" id="site" dir="ltr" class="ng-scope">
-
-
+<html lang="et-EE">
 <head>
- 
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" sizes="72x72" href="./photos/logo.ico">
-    <title>24 Tunni Elektrihind</title>
-    <link rel="shortcut icon" href="./photos/logo.png"type="image/x-icon">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" sizes="72x72" href="./photos/logo.ico">
+    <link rel="shortcut icon" href="./photos/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
-
-        <script src="chart.js"></script>
+    <title>24 Tunni Elektrihind</title>
+    <script  src="chart.js"></script>
+    <script type="module" src="../krabikuller/firebase.js"></script>
 </head>
-
 <body>
-    <h1>Hetke Elektrihind ja Järgmise Tunni Hind</h1>
-    <p>Hetke hind: <span id="currentPrice">Laadimine...</span> senti/KWh</p>
-    <p>Järgmise tunni hind: <span id="nextHourPrice">Laadimine...</span> senti/KWh</p>
+    <h1>Elektrihinna Graafik</h1>
+    <p><strong>Hetke hind:</strong> <span id="currentPrice">Laadimine...</span> senti/KWh</p>
+    <p><strong>Järgmise tunni hind:</strong> <span id="nextHourPrice">Laadimine...</span> senti/KWh</p>
+    <p><strong>Järgmine odavaim hind on kell:</strong> <span id="nextLowestTime">Laadimine...</span></p>
+    <p><strong>Määratud hind (senti/KWh):</strong>
+    <input type="number" id="priceThreshold" placeholder="Sisesta hind" value="5" /></p>
+    <!-- <button id="checkThreshold">Kontrolli hinda</button> -->
+    <p><strong>Esimene hind alla määratud väärtuse:</strong> <span id="belowThreshold">Laadimine...</span></p>
+    
     <canvas id="priceChart"></canvas>
-    <Button id="refresh">Värskenda</Button>
-    <script src="script.js"></script>
-
+    <button id="refresh">Värskenda</button>
+    <script type="module"  src="script.js"></script>
 </body>
-
 </html>

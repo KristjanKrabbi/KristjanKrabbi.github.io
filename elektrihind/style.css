@@ -1,20 +1,69 @@
+/* Põhistiilid */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333;
+  text-align: center;
+}
 
-#priceChart{
-    display: block;
-    box-sizing: border-box;
-    height: 350px;
-    width: 700px;
+/* Lehe pealkiri */
+h1 {
+  font-size: 2.5rem;
+  margin-top: 20px;
+  color: #2c3e50;
+}
+
+/* Tekstist lõigud */
+p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+/* Graafik */
+#priceChart {
+  display: block;
+  box-sizing: border-box;
+  height: 400px;
+  width: 800px;
+  margin: 20px auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+/* Nupu kujundus */
+#refresh {
+  background-color: #3498db;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#refresh:hover {
+  background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+  #priceChart {
+      width: 90%;
+      height: auto;
   }
-  @media (min-width: 768px) {
-    .sm\:px-8 {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
+  h1 {
+      font-size: 2rem;
   }
-  .max-w-screen-xl {
-    max-width: 1280px;
+  p {
+      font-size: 1rem;
   }
-  .mx-auto {
-    margin-left: auto;
-    margin-right: auto;
+  #refresh {
+      font-size: 0.9rem;
+      padding: 8px 15px;
   }
+}
