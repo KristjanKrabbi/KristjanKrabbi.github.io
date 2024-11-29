@@ -51,6 +51,8 @@ function drawChart(labels, prices) {
     const borderColors = prices.map((price, index) => {
         return index === minIndex ? 'darkgreen' : 'rgba(75, 192, 192, 1)';  // Muuda madalaima hinna tulba äärise värv
     });
+
+    
     const ctx = document.getElementById('priceChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',  // Kasuta joongraafikut 'line'
@@ -119,7 +121,15 @@ function drawChart(labels, prices) {
             }
         });
 }
+document.getElementById('refresh').addEventListener('click', function (e) {
+    // Assuming 'chart' is your chart instance
+/* if (drawChart.Chart) {
+    drawChart.Chart.destroy();
+} */
+   // console.log(toString  (drawChart.ctx))
 
+    fetchElectricityPrices();
+});
 
 
 fetchElectricityPrices();  // Lae hinnad ja joonista graafik
