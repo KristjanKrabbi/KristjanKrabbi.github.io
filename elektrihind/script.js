@@ -71,14 +71,23 @@ function drawChart(labels, prices) {
      // Leia järgmine madalaim hind
      let nextMinPrice = Number.MAX_VALUE;
      let nextMinIndex = -1;
-
+     //prices[0]!==minPrice 
+     //index !== minIndex
+     console.log("minIndex index is "+minIndex)
+     if (minIndex!==0 ) {
+        console.log("minIndex index is not 0")
+        nextMinPrice = minPrice;
+            nextMinIndex = minIndex;
+     } else {
+        
+     
      prices.forEach((price, index) => {
-        if (prices[0]!==minPrice  && price < nextMinPrice) {
+        if (index !== minIndex  && price < nextMinPrice) {
             // Kontrollime, et hind ei ole sama, mis minPrice ja on väiksem kui järgmine madalaim hind
             nextMinPrice = price;
             nextMinIndex = index;
         }
-    });
+    });}
     document.getElementById('priceThreshold').addEventListener('change', async () => {
         console.log(parseFloat(document.getElementById('priceThreshold').value))
     //})
