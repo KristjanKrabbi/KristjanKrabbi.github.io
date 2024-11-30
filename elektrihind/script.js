@@ -64,13 +64,15 @@ async function loadUserPreferences() {
         console.error("Andmete laadimine ebaõnnestus:", error);
     }
 }
-window.addEventListener('load', loadUserPreferences);
+
 function drawChart(labels, prices) {
     const minPrice = Math.min(...prices);  // Leia madalaim hind
     const minIndex = prices.indexOf(minPrice);  // Leia madalaima hinna indeks
+    let threshold  = parseFloat(document.getElementById('priceThreshold').value);
      // Leia järgmine madalaim hind
      let nextMinPrice = Number.MAX_VALUE;
      let nextMinIndex = -1;
+     let belowThresholdIndex = -1;
      //prices[0]!==minPrice 
      //index !== minIndex
      console.log("minIndex index is "+minIndex)
@@ -78,7 +80,7 @@ function drawChart(labels, prices) {
         console.log("minIndex index is not 0")
         nextMinPrice = minPrice;
             nextMinIndex = minIndex;
-     } else {
+     }
         
      
      prices.forEach((price, index) => {
@@ -87,12 +89,16 @@ function drawChart(labels, prices) {
             nextMinPrice = price;
             nextMinIndex = index;
         }
-    });}
+        if (belowThresholdIndex === -1 && price < threshold) {
+            document.getElementById('belowThreshold').textContent  = `${labels[index]} (${price.toFixed(2)} senti/KWh)`;
+            belowThresholdIndex = index;
+        }
+    });
+    
+
     document.getElementById('priceThreshold').addEventListener('change', async () => {
-        console.log(parseFloat(document.getElementById('priceThreshold').value))
-    //})
-    //document.getElementById('checkThreshold').addEventListener('click', async () => {
-        const threshold = parseFloat(document.getElementById('priceThreshold').value);
+    
+        threshold  = parseFloat(document.getElementById('priceThreshold').value);
     
         if (isNaN(threshold)) {
             alert("Palun sisesta kehtiv number!");
@@ -109,9 +115,9 @@ function drawChart(labels, prices) {
                 belowThresholdIndex = index;
             }
         });
-    
+        
         document.getElementById('belowThreshold').textContent = belowThreshold;
-    
+        drawChart(labels, prices) 
         // Hangi kasutaja IP-aadress
         const ipResponse = await fetch("https://api.ipify.org?format=json");
         const ipData = await ipResponse.json();
@@ -126,7 +132,7 @@ function drawChart(labels, prices) {
         };
         console.log((userIp))
         const userRef = ref(database, `userPreferences/${userIp}`);
-        console.log(toString(userRef))
+        
         set(userRef, {
             ip: userIp,
             threshold: threshold,
@@ -137,21 +143,15 @@ function drawChart(labels, prices) {
         }).catch((error) => {
             console.error("Andmete salvestamine ebaõnnestus:", error);
         });
-
-        //const newUserRef = push(userRef);
-        //set(newUserRef, { entry })
-        /* database.ref('userPreferences').push(entry, (error) => {
-            if (error) {
-                console.error("Andmete salvestamine ebaõnnestus:", error);
-            } else {
-                console.log("Andmed salvestatud Firebase’i:", entry);
-            }
-        }); */
+        
+        
     });
-    
+
+
     const backgroundColors = prices.map((price, index) => {
         if (index === minIndex) return 'green'; // Kõige madalam hind
         if (index === nextMinIndex) return 'orange'; // Järgmine madalaim hind
+        if (price <= document.getElementById('priceThreshold').value) return 'orange';
         return 'rgba(75, 192, 192, 0.2)'; // Muud tulbad
     });
     /* const backgroundColors = prices.map((price, index) => {
@@ -168,7 +168,7 @@ function drawChart(labels, prices) {
     // Kuvame järgmise madalaima hinna kellaaja
     const nextLowestTime = labels[nextMinIndex];
     document.getElementById('nextLowestTime').textContent = nextLowestTime +" hind: "+nextMinPrice.toFixed(2) +" senti/KWh" || "Pole saadaval";
-    if (chart) {
+    startAgain: if (chart) {
         chart.destroy();
     }
     
@@ -246,5 +246,5 @@ document.getElementById('refresh').addEventListener('click', function (e) {
     fetchElectricityPrices();
 });
 
-
+window.addEventListener('load', loadUserPreferences);
 fetchElectricityPrices();  // Lae hinnad ja joonista graafik
