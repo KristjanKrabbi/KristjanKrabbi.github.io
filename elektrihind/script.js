@@ -15,6 +15,16 @@ async function fetchElectricityPrices() {
     // const API_URL =`http://localhost:3000/proxy?start=${start.toISOString()}&end=${end.toISOString()}`
     try {
         const response = await fetch(API_URL);
+        /* fetch('https://dashboard.elering.ee/api/nps/price?start=2024-12-02T13:00:00.000Z&end=2024-12-03T13:00:00.000Z', {
+            mode: 'no-cors'
+          })
+          .then(response => {
+            // Handle the response
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          }); */
+          
         const data = await response.json();
 
         if (data.success) {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="et">
+<html lang="et-EE">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
             
             <div class="item">
               <nav class="menu menu--main menu--horisontal">
-                <button class="menu__button" id="menu__button">
+                <button title="open" class="menu__button" id="menu__button">
                   <span></span>
                   <span></span>
                   <span></span>
@@ -40,10 +40,11 @@
               
             </div>
             <div id="loginPanel" class="menu__list">
+              <!-- <form action="/submit-password" method="post"> -->
                 <label for="adminPassword">Sisesta parool:</label>
                 <input type="password" id="adminPassword" placeholder="Parool" >
-                <button id="loginButton">Logi sisse</button>
-                
+                <button type="submit" id="loginButton">Logi sisse</button>
+                <!-- </form> -->
             </div>
             <div class="item">
                 <a
