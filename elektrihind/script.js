@@ -23,14 +23,18 @@ async function fetchElectricityPrices() {
     if (snapshot.exists()) {
       const data = snapshot.val();
       labels = data.data.map(item => {
-        const timestamp = item.timestamp * 1000; // Muudame millisekunditeks
-        return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timestamp = item.timestamp *1000; // Muudame millisekunditeks
+         //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const date = new Date(timestamp)
+        console.log("timestamp "+date.getHours() + ':00')
+        return  (date.getHours() + ':00');
       });
 
-      prices = data.data.map(item => item.price);
+      prices = data.data.map(item => item.price*0.122);
       lastHour = currentHour; // Uuendame viimase tunni jälgijat
       console.log("Andmed Firebase'ist:", { labels, prices });
       drawChart(labels, prices);
+      //return;
     } else {
       console.error("Firebase'ist ei leitud andmeid.");
     }
@@ -87,12 +91,15 @@ async function fetchElectricityPrices() {
                   ...existingData,
                   data: combinedData,
                   end, // Värskenda lõpuaeg
+                  lastHour,
                 });
                 console.log("Olemasolevat kirjet uuendati Firebase'is!");
               } else {
                 // Uute andmete käsitlus
                 const newData = {
+                    
                   start,
+                  lastHour,
                   end,
                   data: Array.isArray(data.data.ee) ? data.data.ee : [],
                   timestamp: new Date().toISOString(),
@@ -158,9 +165,9 @@ async function loadUserPreferences() {
             const userData = snapshot.val();
             if (threshold !== userData.threshold) {
 
-                console.log('threshold in loadUserPreferences in if ' + threshold)
+                
                 threshold = userData.threshold
-                console.log('threshold in loadUserPreferences in if ' + threshold)
+                
 
                 document.getElementById('priceThreshold').value = threshold;
                 drawChart(labels, prices)
@@ -237,50 +244,7 @@ function drawChart(labels, prices) {
     });
 
 
-    document.getElementById('priceThreshold').addEventListener('', async () => {
-        console.log('priceThreshold change')
-        threshold = parseFloat(document.getElementById('priceThreshold').value);
-
-        if (isNaN(threshold)) {
-            alert("Palun sisesta kehtiv number!");
-            return;
-        }
-
-        // Leia hind alla määratud künnise
-        let belowThreshold = "Pole saadaval";
-        let belowThresholdIndex = -1;
-
-        prices.forEach((price, index) => {
-            if (belowThresholdIndex === -1 && price < threshold) {
-                belowThreshold = `${labels[index]} (${price.toFixed(2)} senti/KWh)`;
-                belowThresholdIndex = index;
-            }
-        });
-
-        document.getElementById('belowThreshold').textContent = belowThreshold;
-
-        // Hangi kasutaja IP-aadress
-        const ipResponse = await fetch("https://api.ipify.org?format=json");
-        const ipData = await ipResponse.json();
-        //const userIp = ipData.ip;
-        const userIp = ipData.ip.replaceAll(".", "_");
-
-        console.log((userIp))
-        const userRef = ref(database, `userPreferences/${userIp}`);
-
-        set(userRef, {
-            ip: userIp,
-            threshold: threshold,
-            //belowThreshold: belowThreshold,
-            timestamp: new Date().toISOString()
-        }).then(() => {
-            console.log("Andmed salvestatud Firebase’i!");
-        }).catch((error) => {
-            console.error("Andmete salvestamine ebaõnnestus:", error);
-        });
-
-        //drawChart(labels, prices) 
-    });
+    
 
 
     const backgroundColors = prices.map((price, index) => {
