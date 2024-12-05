@@ -26,7 +26,7 @@ async function fetchElectricityPrices() {
         const timestamp = item.timestamp *1000; // Muudame millisekunditeks
          //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const date = new Date(timestamp)
-        console.log("timestamp "+date.getHours() + ':00')
+        //console.log("timestamp "+date.getHours() + ':00')
         return  (date.getHours() + ':00');
       });
 
@@ -55,6 +55,7 @@ async function fetchElectricityPrices() {
     const end = new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000).toISOString(); // Järgmise päeva südaöö
     //const end = new Date(Date.now(now.setMinutes(0, 0, 0)) + 24 * 60 * 60 * 1000).toISOString();
     console.log(`${API_URL}?start=${start}&end=${end}`)
+    console.log("start="+start+" & "+(new Date(now.setMinutes(0, 0, 0)).toLocaleString()))
     fetch(`${API_URL}?start=${start}&end=${end}`)
         .then(response => {
             if (!response.ok) {
@@ -109,22 +110,7 @@ async function fetchElectricityPrices() {
                 console.log("Uus kirje lisati Firebase'i!");
               }
 
-            // const API_URL =`http://localhost:3000/proxy?start=${start.toISOString()}&end=${end.toISOString()}`
-            //try {
-            //const response = await fetch(API_URL);
-            /* fetch('https://dashboard.elering.ee/api/nps/price?start=2024-12-02T13:00:00.000Z&end=2024-12-03T13:00:00.000Z', {
-                mode: 'no-cors'
-              })
-              .then(response => {
-                // Handle the response
-              })
-              .catch(error => {
-                console.error('Error:', error);
-              }); */
-
-            //const data = await response.json();
-
-            //if (data.success) {
+            
             const priceData = data.data.ee;
 
             labels = [];
@@ -222,6 +208,8 @@ function drawChart(labels, prices) {
     let belowThresholdIndex = -1;
     //prices[0]!==minPrice 
     //index !== minIndex
+    document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
+            document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
     console.log("minIndex index is " + minIndex)
     if (minIndex !== 0) {
         console.log("minIndex index is not 0")
