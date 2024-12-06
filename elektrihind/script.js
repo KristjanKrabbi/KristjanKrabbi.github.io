@@ -172,7 +172,7 @@ async function loadUserPreferences() {
         const ipResponse = await fetch("https://api.ipify.org?format=json");
         const ipData = await ipResponse.json();
         const userIp = ipData.ip.replaceAll(".", "_");
-
+        
         // Firebase'i viide kasutaja IP-aadressiga
         const userRef = ref(database, `userPreferences/${userIp}`);
 
@@ -223,7 +223,7 @@ document.getElementById('priceThreshold').addEventListener('change', async () =>
         //belowThreshold: belowThreshold,
         timestamp: new Date().toISOString()
     }).then(() => {
-        console.log("Andmed salvestatud Firebase’i!" + threshold);
+        console.log("Andmed salvestatud Firebase’i! " + threshold);
     }).catch((error) => {
         console.error("Andmete salvestamine ebaõnnestus:", error);
     });
@@ -238,6 +238,7 @@ function drawChart(labels, prices) {
     let nextMinPrice = Number.MAX_VALUE;
     let nextMinIndex = -1;
     let belowThresholdIndex = -1;
+    let belowThreshold = "Pole saadaval";
     //prices[0]!==minPrice 
     //index !== minIndex
     document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
@@ -257,12 +258,14 @@ function drawChart(labels, prices) {
             nextMinIndex = index;
         }
         if (belowThresholdIndex === -1 && price < threshold) {
-            console.log('belowThreshold')
-            document.getElementById('belowThreshold').textContent = `${labels[index]} (${price.toFixed(2)} senti/KWh)`;
+            console.log('belowThreshold'+labels[index])
+            belowThreshold = `${labels[index]} (${price.toFixed(2)} senti/KWh)`;
+            //document.getElementById('belowThreshold').textContent = `${labels[index]} (${price.toFixed(2)} senti/KWh)`|| "Pole saadaval";
             belowThresholdIndex = index;
         }
-    });
 
+    });
+ document.getElementById('belowThreshold').textContent = belowThreshold;
 
 
 
@@ -286,8 +289,9 @@ function drawChart(labels, prices) {
      }); */
     // Kuvame järgmise madalaima hinna kellaaja
     const nextLowestTime = labels[nextMinIndex];
+    console.log("nextLowestTime="+nextLowestTime)
     document.getElementById('nextLowestTime').textContent = nextLowestTime + " hind: " + nextMinPrice.toFixed(2) + " senti/KWh" || "Pole saadaval";
-    startAgain: if (chart) {
+     if (chart) {
         chart.destroy();
     }
 
