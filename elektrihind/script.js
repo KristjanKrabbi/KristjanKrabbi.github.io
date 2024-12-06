@@ -140,7 +140,7 @@ async function fetchElectricityPrices() {
           
               prices = data.data.ee.map(item => item.price* 0.122).slice(0, 25);
               console.log("Andmed serverist:", { labels, prices });
-              drawChart(labels, prices);
+              //drawChart(labels, prices);
             /* const priceData = data.data.ee;
             const priceDataLenght=24
 
@@ -154,8 +154,8 @@ async function fetchElectricityPrices() {
                 labels.push(date.getHours() + ':00');  // Lisa tunni nimi (nt "13:00")
                 prices.push(hourData.price * 0.122).toFixed(2);  // Lisa hind
             }); */
-            document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
-            document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
+            //document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
+            //document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
             // Joonista graafik
             drawChart(labels, prices);
             //} else {
