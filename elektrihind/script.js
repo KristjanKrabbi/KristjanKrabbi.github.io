@@ -5,7 +5,7 @@ let chart = null; // Globaalse muutuja lisamine
 let labels = [];
 let prices = [];
 let lastHour = new Date().getHours();
-
+document.addEventListener("DOMContentLoaded", function () {
 let threshold = parseFloat(document.getElementById('priceThreshold').value);
 async function fetchElectricityPrices() {
     console.log('fetchElectricityPrices')
@@ -191,7 +191,11 @@ async function loadUserPreferences() {
 
 
                 document.getElementById('priceThreshold').value = threshold;
+                if (labels.length > 0) {
+                    console.log(prices[0])
+                
                 drawChart(labels, prices)
+            }
             }
 
             //document.getElementById('belowThreshold').textContent = userData.belowThreshold; // Esimene hind alla künnise
@@ -377,3 +381,4 @@ console.log('end line 250 threshold=' + threshold)
 window.addEventListener('load', loadUserPreferences);
 //loadUserPreferences()
 fetchElectricityPrices();  // Lae hinnad ja joonista graafik
+});
