@@ -7,7 +7,9 @@ body {
   color: #333;
   text-align: center;
 }
-
+.data{
+  font-size: 2rem;
+}
 /* Lehe pealkiri */
 h1 {
   font-size: 2.5rem;
@@ -66,4 +68,5 @@ p {
       font-size: 0.9rem;
       padding: 8px 15px;
   }
+  
 }

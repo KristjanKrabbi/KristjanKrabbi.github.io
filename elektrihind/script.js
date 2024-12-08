@@ -59,9 +59,9 @@ async function fetchElectricityPrices() {
                 }
             }
         }
-    } catch (error) {
-        console.error("Viga Firebase'i päringus:", error);
-    }
+    //} catch (error) {
+        //console.error("Viga Firebase'i päringus:", error);
+    //}
 
     //const start = new Date(now.setMinutes(0, 0, 0));  // Alustame praegusest tunni algusest
     //const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);  // Lõpeta 24 tunni pärast
@@ -162,7 +162,10 @@ async function fetchElectricityPrices() {
             //  console.error('API vastus ei olnud edukas');
             //}
         })
-        .catch(error => console.error("Error:", error));
+        //.catch(error => console.error("Error:", error));
+    } catch (error) {
+        console.error("Viga Firebase'i päringus:", error);
+    }
 }
 
 async function loadUserPreferences() {
@@ -241,8 +244,8 @@ function drawChart(labels, prices) {
     let belowThreshold = "Pole saadaval";
     //prices[0]!==minPrice 
     //index !== minIndex
-    document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
-    document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
+    //document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
+    //document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
     console.log("minIndex index is " + minIndex)
     if (minIndex !== 0) {
         console.log("minIndex index is not 0")
@@ -264,9 +267,13 @@ function drawChart(labels, prices) {
             belowThresholdIndex = index;
         }
 
-    });
- document.getElementById('belowThreshold').textContent = belowThreshold;
 
+    });
+ //document.getElementById('belowThreshold').textContent = belowThreshold;
+
+ document.getElementById('belowThreshold').textContent = belowThreshold;
+ document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
+ document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
 
 
 
