@@ -33,7 +33,7 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
                 console.log("Tellimus salvestatud!");
                 const wantsToPay = confirm("Kas soovid maksta kohe?");
                 if (wantsToPay) {
-                    window.location.href = "https://www.swedbank.ee/pay?id=1kg5ewme3e9de";
+                    window.location.href = "https://www.swedbank.ee/pay?id=1t4l48e3253vk";
                 }
                 // Lisa toidunimi eraldi nimekirja
                 const foodNamesRef = ref(database, 'foodNames');
