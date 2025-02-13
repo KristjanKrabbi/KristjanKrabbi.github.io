@@ -53,6 +53,8 @@ document.getElementById('orderForm').addEventListener('submit', function (e) {
                 });
 
                 loadTodayOrders(); // Laadib uuesti tellimused
+                 document.getElementById('name').value="";
+     document.getElementById('order').value="";
             })
             .catch((error) => console.error("Salvestusviga:", error));
     }
