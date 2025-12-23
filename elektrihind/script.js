@@ -15,7 +15,7 @@ async function fetchElectricityPrices() {
     const lastHourRef = ref(database, 'electricityPrices/lastHour');
     //const currentTimestamp = Math.floor(now.getTime() / 1000); // Praegune aeg sekundites
     const currentTimestamp = Math.floor(
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0).getTime() / 1000
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),now.getMinutes()-15 , 0).getTime() / 1000
       );
     if (labels.length > 0 && prices.length > 0 && currentHour === lastHour) {
         console.log("Andmed mälust:", { labels, prices });
@@ -45,9 +45,9 @@ async function fetchElectricityPrices() {
                         //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         const date = new Date(timestamp)
                         //console.log("timestamp "+date.getHours() + ':00')
-                        return (date.getHours() + ':00');
-                    }).slice(0,25);
-                    prices = filteredData.map(item => item.price * 0.122).slice(0,25);
+                        return (date.getHours() +':'+ date.getMinutes());
+                    }).slice(0,96);
+                    prices = filteredData.map(item => item.price * 0.122).slice(0,96);
 
                     //prices = data.data.map(item => item.price * 0.122).slice(0,24);
                     //lastHour = currentHour; // Uuendame viimase tunni jälgijat
@@ -135,10 +135,10 @@ async function fetchElectricityPrices() {
 
             labels = data.data.ee.map(item => {
                 const timestamp = item.timestamp * 1000;
-                return new Date(timestamp).getHours() + ':00';
-              }).slice(0, 25);
+                return new Date(timestamp).getHours() + ':'+ date.getMinutes();
+              }).slice(0, 96);
           
-              prices = data.data.ee.map(item => item.price* 0.122).slice(0, 25);
+              prices = data.data.ee.map(item => item.price* 0.122).slice(0, 96);
               console.log("Andmed serverist:", { labels, prices });
               //drawChart(labels, prices);
             /* const priceData = data.data.ee;
