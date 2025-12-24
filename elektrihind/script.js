@@ -15,13 +15,21 @@ async function fetchElectricityPrices() {
     const lastHourRef = ref(database, 'electricityPrices/lastHour');
     //const currentTimestamp = Math.floor(now.getTime() / 1000); // Praegune aeg sekundites
     const currentTimestamp = Math.floor(
-        new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),now.getMinutes()-15 , 0).getTime() / 1000
+        new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(),now.getMinutes()-14 , 0).getTime() / 1000
+        
       );
+      console.log("Praegune aeg " ,{currentTimestamp});
     if (labels.length > 0 && prices.length > 0 && currentHour === lastHour) {
         console.log("Andmed mälust:", { labels, prices });
+        filterData(currentTimestamp);
         drawChart(labels, prices); // Kasutame mälus olevaid andmeid
         return;
     }
+    else if (labels.length > 0 && prices.length > 0 ) {
+        console.log("Andmed mälust:", { labels, prices });
+        filterData(currentTimestamp);
+        drawChart(labels, prices);
+    } 
 
     try {
         // Hangi viimane salvestatud tund Firebase'ist
@@ -47,7 +55,7 @@ async function fetchElectricityPrices() {
                         //console.log("timestamp "+date.getHours() + ':00')
                         return (date.getHours() +':'+ date.getMinutes());
                     }).slice(0,96);
-                    prices = filteredData.map(item => item.price * 0.122).slice(0,96);
+                    prices = filteredData.map(item => item.price * 0.124).slice(0,96);
 
                     //prices = data.data.map(item => item.price * 0.122).slice(0,24);
                     //lastHour = currentHour; // Uuendame viimase tunni jälgijat
@@ -138,7 +146,7 @@ async function fetchElectricityPrices() {
                 return new Date(timestamp).getHours() + ':'+ date.getMinutes();
               }).slice(0, 96);
           
-              prices = data.data.ee.map(item => item.price* 0.122).slice(0, 96);
+              prices = data.data.ee.map(item => item.price* 0.124).slice(0, 96);
               console.log("Andmed serverist:", { labels, prices });
               //drawChart(labels, prices);
             /* const priceData = data.data.ee;
@@ -167,6 +175,49 @@ async function fetchElectricityPrices() {
         console.error("Viga Firebase'i päringus:", error);
     }
 }
+async function filterData(currentTimestamp) {
+    
+  const filteredLabels = [];
+const filteredPrices = [];
+const currentDate = new Date(currentTimestamp * 1000);
+
+for (let i = 0; i < labels.length; i++) {
+    
+const [hours, minutes] = labels[i].split(":").map(Number);
+const labelDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate(),
+    hours,
+    minutes,
+    0
+);
+    if (labelDate >= currentDate) {
+        //console.log(labels[i])
+        filteredLabels.push(labels[i]);
+        //console.log(prices[i])
+        filteredPrices.push(prices[i]);
+    }
+}
+labels=filteredLabels
+prices=filteredPrices
+//console.log(filteredLabels);
+//console.log(filteredPrices);
+
+
+    /* const filteredData = data.filter(item => item.labels >= currentTimestamp);
+    labels = filteredData.map(item => {
+                    //labels = data.data.map(item => {
+                        const timestamp = item.timestamp * 1000; // Muudame millisekunditeks
+                        //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const date = new Date(timestamp)
+                        //console.log("timestamp "+date.getHours() + ':00')
+                        return (date.getHours() +':'+ date.getMinutes());
+                    }).slice(0,96);
+                    prices =  filteredData.map(item => item.price * 0.122).slice(0,96);*/
+
+}
+
 
 async function loadUserPreferences() {
     console.log('loadUserPreferences')
@@ -375,6 +426,7 @@ function drawChart(labels, prices) {
     });
 }
 document.getElementById('refresh').addEventListener('click', function (e) {
+    
     fetchElectricityPrices();
 });
 console.log('end line 250 threshold=' + threshold)
