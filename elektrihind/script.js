@@ -38,10 +38,10 @@ async function fetchElectricityPrices() {
     const snapshot = await get(lastHourRef);
         if (snapshot.exists()) {
             const lastHourData = snapshot.val();
-            const { hour: lastHour, date: lastDate } = lastHourData;
+            const { hour: dataLastHour, date: lastDate } = lastHourData;
 
             // Kontrollime, kas tund või kuupäev on muutunud
-            if (lastHour === currentHour && lastDate === currentDate) {
+            if (dataLastHour === currentHour && lastDate === currentDate) {
                 console.log("Tund ja kuupäev pole muutunud. Laen andmed Firebase'ist...");
                 const pricesRef = ref(database, 'electricityPrices/current');
                 const priceSnapshot = await get(pricesRef);
@@ -63,7 +63,7 @@ async function fetchElectricityPrices() {
                     timestamps=filteredData; */
 
                     //prices = data.data.map(item => item.price * 0.122).slice(0,24);
-                    //lastHour = currentHour; // Uuendame viimase tunni jälgijat
+                    lastHour = currentHour; // Uuendame viimase tunni jälgijat
                     console.log("Andmed Firebase'ist:", { labels, prices,timestamps });
                     drawChart(labels, prices);
                     return;
@@ -146,6 +146,7 @@ async function fetchElectricityPrices() {
           
               prices = data.data.ee.map(item => item.price* 0.124).slice(0, 96);
               timestamps=data.data.ee; */
+              lastHour = currentHour; // Uuendame viimase tunni jälgijat
 
               console.log("Andmed serverist:", { labels, prices,timestamps });
              
