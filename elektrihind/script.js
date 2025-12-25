@@ -2,6 +2,7 @@
 import { database } from '../krabikuller/firebase.js';
 import { ref, push, set, get, update } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 let chart = null; // Globaalse muutuja lisamine
+let timestamps=[];
 let labels = [];
 let prices = [];
 let lastHour = new Date().getHours();
@@ -20,14 +21,15 @@ async function fetchElectricityPrices() {
       );
       console.log("Praegune aeg " ,{currentTimestamp});
     if (labels.length > 0 && prices.length > 0 && currentHour === lastHour) {
-        console.log("Andmed mälust:", { labels, prices });
-        filterData(currentTimestamp);
+        
+       await filterData(currentTimestamp,timestamps);
+       console.log("Andmed mälust:", { labels, prices,timestamps });
         drawChart(labels, prices); // Kasutame mälus olevaid andmeid
         return;
     }
     else if (labels.length > 0 && prices.length > 0 ) {
-        console.log("Andmed mälust:", { labels, prices });
-        filterData(currentTimestamp);
+       await filterData(currentTimestamp,timestamps);
+       console.log("Andmed mälust:(Tund muutunud)", { labels, prices,timestamps });
         drawChart(labels, prices);
     } 
 
@@ -46,20 +48,23 @@ async function fetchElectricityPrices() {
 
                 if (priceSnapshot.exists()) {
                     const data = priceSnapshot.val();
-                    const filteredData = data.data.filter(item => item.timestamp >= currentTimestamp);
+                   await filterData(currentTimestamp,data.data);
+                    /* const filteredData = data.data.filter(item => item.timestamp >= currentTimestamp);
+
                     labels = filteredData.map(item => {
                     //labels = data.data.map(item => {
                         const timestamp = item.timestamp * 1000; // Muudame millisekunditeks
                         //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const date = new Date(timestamp)
-                        //console.log("timestamp "+date.getHours() + ':00')
+                        const date = new Date(item.timestamp * 1000)
+                        //console.log("timestamp "+date)
                         return (date.getHours() +':'+ date.getMinutes());
                     }).slice(0,96);
                     prices = filteredData.map(item => item.price * 0.124).slice(0,96);
+                    timestamps=filteredData; */
 
                     //prices = data.data.map(item => item.price * 0.122).slice(0,24);
                     //lastHour = currentHour; // Uuendame viimase tunni jälgijat
-                    console.log("Andmed Firebase'ist:", { labels, prices });
+                    console.log("Andmed Firebase'ist:", { labels, prices,timestamps });
                     drawChart(labels, prices);
                     return;
                 } else {
@@ -67,14 +72,6 @@ async function fetchElectricityPrices() {
                 }
             }
         }
-    //} catch (error) {
-        //console.error("Viga Firebase'i päringus:", error);
-    //}
-
-    //const start = new Date(now.setMinutes(0, 0, 0));  // Alustame praegusest tunni algusest
-    //const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);  // Lõpeta 24 tunni pärast
-
-    //const API_URL = `https://dashboard.elering.ee/api/nps/price?start=${start.toISOString()}&end=${end.toISOString()}`;
 
     const API_URL = "https://us-central1-krabikuller.cloudfunctions.net/fetchElectricityPrices";
 
@@ -92,7 +89,6 @@ async function fetchElectricityPrices() {
             }
             return response.json();
         })
-
 
         .then(async data => {
             console.log(data); // Kasutage andmeid vastavalt vajadusele
@@ -140,84 +136,37 @@ async function fetchElectricityPrices() {
                 await set(pricesRef, newData);
                 console.log("Uus kirje lisati Firebase'i!");
             }
+           await filterData(currentTimestamp,data.data.ee)
 
-            labels = data.data.ee.map(item => {
-                const timestamp = item.timestamp * 1000;
-                return new Date(timestamp).getHours() + ':'+ date.getMinutes();
+            /* labels = data.data.ee.map(item => {
+                const timestamp =new Date( item.timestamp * 1000);
+                
+                return (timestamp.getHours() + ':'+ timestamp.getMinutes());
               }).slice(0, 96);
           
               prices = data.data.ee.map(item => item.price* 0.124).slice(0, 96);
-              console.log("Andmed serverist:", { labels, prices });
-              //drawChart(labels, prices);
-            /* const priceData = data.data.ee;
-            const priceDataLenght=24
+              timestamps=data.data.ee; */
 
-            labels = [];
-            prices = [];
-
-
-            priceData.forEach(hourData => {
-                const timestamp = hourData.timestamp * 1000;  // Muuda timestamp millisekunditeks
-                const date = new Date(timestamp);
-                labels.push(date.getHours() + ':00');  // Lisa tunni nimi (nt "13:00")
-                prices.push(hourData.price * 0.122).toFixed(2);  // Lisa hind
-            }); */
-            //document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
-            //document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
-            // Joonista graafik
+              console.log("Andmed serverist:", { labels, prices,timestamps });
+             
             drawChart(labels, prices);
-            //} else {
-            //  console.error('API vastus ei olnud edukas');
-            //}
+            
         })
         //.catch(error => console.error("Error:", error));
     } catch (error) {
         console.error("Viga Firebase'i päringus:", error);
     }
 }
-async function filterData(currentTimestamp) {
-    
-  const filteredLabels = [];
-const filteredPrices = [];
-const currentDate = new Date(currentTimestamp * 1000);
+async function filterData(currentTimestamp,data) {
 
-for (let i = 0; i < labels.length; i++) {
-    
-const [hours, minutes] = labels[i].split(":").map(Number);
-const labelDate = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    currentDate.getDate(),
-    hours,
-    minutes,
-    0
-);
-    if (labelDate >= currentDate) {
-        //console.log(labels[i])
-        filteredLabels.push(labels[i]);
-        //console.log(prices[i])
-        filteredPrices.push(prices[i]);
-    }
-}
-labels=filteredLabels
-prices=filteredPrices
-//console.log(filteredLabels);
-//console.log(filteredPrices);
-
-
-    /* const filteredData = data.filter(item => item.labels >= currentTimestamp);
+    const filteredData = data.filter(item => item.timestamp >= currentTimestamp);
     labels = filteredData.map(item => {
-                    //labels = data.data.map(item => {
-                        const timestamp = item.timestamp * 1000; // Muudame millisekunditeks
-                        //return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const date = new Date(timestamp)
-                        //console.log("timestamp "+date.getHours() + ':00')
-                        return (date.getHours() +':'+ date.getMinutes());
-                    }).slice(0,96);
-                    prices =  filteredData.map(item => item.price * 0.122).slice(0,96);*/
-
+        const date = new Date(item.timestamp * 1000);// Muudame millisekunditeks
+        return (date.getHours() + ':' + date.getMinutes());
+    }).slice(0, 96);
+    prices = filteredData.map(item => item.price * 0.124).slice(0, 96);
+    timestamps = filteredData;
 }
-
 
 async function loadUserPreferences() {
     console.log('loadUserPreferences')
@@ -226,21 +175,14 @@ async function loadUserPreferences() {
         const ipResponse = await fetch("https://api.ipify.org?format=json");
         const ipData = await ipResponse.json();
         const userIp = ipData.ip.replaceAll(".", "_");
-        
         // Firebase'i viide kasutaja IP-aadressiga
         const userRef = ref(database, `userPreferences/${userIp}`);
-
         // Lae andmed Firebase'ist
         const snapshot = await get(userRef);
-
         if (snapshot.exists()) {
             const userData = snapshot.val();
             if (threshold !== userData.threshold) {
-
-
                 threshold = userData.threshold
-
-
                 document.getElementById('priceThreshold').value = threshold;
                 if (labels.length > 0) {
                     console.log(prices[0])
@@ -248,8 +190,7 @@ async function loadUserPreferences() {
                 drawChart(labels, prices)
             }
             }
-
-            //document.getElementById('belowThreshold').textContent = userData.belowThreshold; // Esimene hind alla künnise
+             //document.getElementById('belowThreshold').textContent = userData.belowThreshold; // Esimene hind alla künnise
             console.log("Andmed laaditud:", userData);
         } else {
             console.log("Andmeid ei leitud selle IP-aadressiga.");
@@ -258,6 +199,7 @@ async function loadUserPreferences() {
         console.error("Andmete laadimine ebaõnnestus:", error);
     }
 }
+
 document.getElementById('priceThreshold').addEventListener('change', async () => {
     console.log('priceThreshold change')
     threshold = parseFloat(document.getElementById('priceThreshold').value);
@@ -286,29 +228,24 @@ document.getElementById('priceThreshold').addEventListener('change', async () =>
         console.error("Andmete salvestamine ebaõnnestus:", error);
     });
 });
+
 function drawChart(labels, prices) {
 
     console.log('drawChart threshold=' + threshold + prices.Number)
     const minPrice = Math.min(...prices);  // Leia madalaim hind
     const minIndex = prices.indexOf(minPrice);  // Leia madalaima hinna indeks
-    //threshold  = parseFloat(document.getElementById('priceThreshold').value);
     // Leia järgmine madalaim hind
     let nextMinPrice = Number.MAX_VALUE;
     let nextMinIndex = -1;
     let belowThresholdIndex = -1;
     let belowThreshold = "Pole saadaval";
-    //prices[0]!==minPrice 
-    //index !== minIndex
-    //document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
-    //document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
+
     console.log("minIndex index is " + minIndex)
     if (minIndex !== 0) {
         console.log("minIndex index is not 0")
         nextMinPrice = minPrice;
         nextMinIndex = minIndex;
     }
-
-
     prices.forEach((price, index) => {
         if (index !== minIndex && price < nextMinPrice) {
             // Kontrollime, et hind ei ole sama, mis minPrice ja on väiksem kui järgmine madalaim hind
@@ -321,16 +258,10 @@ function drawChart(labels, prices) {
             //document.getElementById('belowThreshold').textContent = `${labels[index]} (${price.toFixed(2)} senti/KWh)`|| "Pole saadaval";
             belowThresholdIndex = index;
         }
-
-
     });
- //document.getElementById('belowThreshold').textContent = belowThreshold;
-
  document.getElementById('belowThreshold').textContent = belowThreshold;
  document.getElementById('currentPrice').textContent = prices[0].toFixed(2);
  document.getElementById('nextHourPrice').textContent = prices[1].toFixed(2);
-
-
 
     const backgroundColors = prices.map((price, index) => {
         if (index === minIndex) return 'green'; // Kõige madalam hind
@@ -371,7 +302,7 @@ function drawChart(labels, prices) {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 backgroundColor: backgroundColors,  // Rakenda kohandatud taustavärvid
                 borderColor: borderColors,  // Rakenda kohandatud äärisevärvid
-                borderWidth: 2,
+                borderWidth: 0.5,
                 stepped: true,  // Määrab astmelise joonistamise
                 pointBackgroundColor: function (context) {
                     return context.dataIndex === minIndex ? 'red' : 'rgba(75, 192, 192, 1)';
@@ -411,16 +342,8 @@ function drawChart(labels, prices) {
                                 ? `${label} ${value.toFixed(2)} s/KWh (madalaim)`
                                 : `${label} ${value.toFixed(2)} s/KWh`;
                         }
-
                     }
-
-
-
-
                 }
-
-
-
             }
         }
     });
