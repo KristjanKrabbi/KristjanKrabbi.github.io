@@ -24,10 +24,12 @@ p {
 }
 input{
   font-size: 1.3rem;
+  max-width: 100px;
   /* font-weight: unset; */
 }
 p strong{
   font-size: 1.3rem
+      
 }
 /* Graafik */
 #priceChart {
