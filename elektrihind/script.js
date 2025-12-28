@@ -193,8 +193,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let userPreferences = getCookie('UserPreferences')
         if (!userPreferences) {
             console.log(userPreferences)
+            userPreferences=threshold
 
-            setCookie('UserPreferences', document.getElementById('priceThreshold').value, 365)
+            setCookie('UserPreferences', threshold, 365)
         }
         document.getElementById('priceThreshold').value = userPreferences;
         threshold = userPreferences;
