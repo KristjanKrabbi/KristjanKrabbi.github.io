@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let threshold = document.getElementById('priceThreshold').value;
     async function fetchElectricityPrices() {
         console.log('fetchElectricityPrices')
-        // now = new Date();
+         now = new Date();
         const currentTime = new Date(RoundTime(now, 15)).getTime() / 1000
         const currentHour = now.getHours();
         const currentDate = now.toISOString().split('T')[0]; // Praegune kuupäev (YYYY-MM-DD)
@@ -249,10 +249,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         console.log('priceThreshold change', threshold)
-        drawChart(labels, prices)
+        
 
         setCookie('UserPreferences', threshold, 365)
-
+        drawChart(labels, prices)
         /* const ipResponse = await fetch("https://api.ipify.org?format=json");
         const ipData = await ipResponse.json();
         //const userIp = ipData.ip;
@@ -298,7 +298,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (belowThresholdIndex === -1 && price < threshold) {
                 console.log('belowThreshold' + labels[index])
-                belowThreshold = `${labels[index]} (${price.toFixed(2)} senti/KWh)`;
+                let bTTime=''
+                if (index==0) {
+                    bTTime='Praegu'
+                } else {
+                    bTTime=`${labels[index]}`
+                }
+                belowThreshold = `${bTTime} (${price.toFixed(2)} senti/KWh)`;
                 //document.getElementById('belowThreshold').textContent = `${labels[index]} (${price.toFixed(2)} senti/KWh)`|| "Pole saadaval";
                 belowThresholdIndex = index;
             }
@@ -398,7 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('refresh').addEventListener('click', function (e) {
         Array.from(selector).forEach(btn => btn.classList.remove('active-btn'));
         now = new Date();
-        lastHour = now.getHours()
+        //lastHour = now.getHours()
         currentTimestamp = new Date(RoundTime(now, 15)).getTime() / 1000
         fetchElectricityPrices();
         this.classList.add('active-btn');
@@ -431,30 +437,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const buttons = document.getElementsByClassName("selectedHours");
-    var buttonId=''
-    /* for (let i = 0; i < buttons.length; i++) {
-       // buttons[i].style.backgroundColor=""  
-        buttons[i].addEventListener("click", function (e) {
-            buttonId=e.target.id
-            console.log(`You clicked: ${this.textContent}`,e.target.id,(e.target.id).replace(/\D/g, ''))
-            SelectedHourscookie(buttonId.replace(/\D/g, ''),set)
-            //alert(`You clicked: ${this.textContent}`);
-            filterData(currentTimestamp, timestamps);
 
-            buttons.forEach(b => b.style.backgroundColor="");
-            buttons[i].style.backgroundColor="green";
-        document.getElementById(buttonId).style.backgroundColor="green";
-        drawChart(labels, prices);
-
-        });
-      
-    } */
     Array.from(buttons).forEach(button => {
         button.addEventListener('click', function () {
             // Remove 'active-btn' class from all buttons
             Array.from(buttons).forEach(btn => btn.classList.remove('active-btn'));
-console.log(button.id)
-SelectedHourscookie(button.id.replace(/\D/g, ''),set)
+            console.log(button.id)
+            SelectedHourscookie(button.id.replace(/\D/g, ''), set)
             // Add 'active-btn' class to the clicked button
             this.classList.add('active-btn');
             filterData(currentTimestamp, timestamps);
