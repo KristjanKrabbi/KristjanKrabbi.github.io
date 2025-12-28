@@ -192,11 +192,17 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('loadUserPreferences')
         let userPreferences = getCookie('UserPreferences')
         if (!userPreferences) {
+            console.log(userPreferences)
 
             setCookie('UserPreferences', document.getElementById('priceThreshold').value, 365)
         }
         document.getElementById('priceThreshold').value = userPreferences;
         threshold = userPreferences;
+        let SelectedHours=SelectedHourscookie('',get)
+        if (!SelectedHours) {
+            console.log(SelectedHours)
+            SelectedHourscookie('24',set)
+        }
         document.getElementById(SelectedHourscookie('',get)+'h').classList.add('active-btn')
        console.log( SelectedHourscookie('',get)+'h')
 
