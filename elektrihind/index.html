@@ -25,7 +25,22 @@
         <strong><input  size=auto type="number" id="priceThreshold"  placeholder="Sisesta hind" value="5" /></strong> senti/KWh: <strong><span id="belowThreshold">Laadimine...</span></p></strong>
     
     <canvas id="priceChart"></canvas>
-    <button id="refresh">Värskenda</button>
+    <div >
+    <button id="2h" class="selectedHours">2h</button>
+    <button id="4h" class="selectedHours">4h</button>
+    <button id="6h" class="selectedHours">6h</button>
+    <button id="8h" class="selectedHours">8h</button>
+    <button id="10h" class="selectedHours">10h</button>
+    <button id="12h" class="selectedHours">12h</button>
+    <button id="24h" class="selectedHours">24h</button>
+    </div>
+    
+    <div>
+        <button id ="today" class="selectedDay">täna</button>
+        <button id="refresh" class="selectedDay active-btn">praegune</button>
+        <button id="tomorrow" class="selectedDay">homme</button>
+    </div>
+    
     <script type="module"  src="script.js"></script>
     <script type="module" src="../krabikuller/firebase.js"></script>
     <script  src="chart.js"></script>
