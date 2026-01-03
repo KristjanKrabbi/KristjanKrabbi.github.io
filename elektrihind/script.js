@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) / 1000;
     let today = 0
     const stockPriceHour = 14 //the hour from which stock prices are requested
+    const stockPriceRelease = new Date(now.getFullYear(), now.getMonth(), now.getDate(), stockPriceHour, 0, 0).getTime() / 1000;
+
     /**
      * appState
      * @param {string} source-'memory'  'database'  'server'
@@ -40,8 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
             drawChart(labels, prices);
             showDataSource();
             const lastTimestamp = timestamps.at(-1)?.timestamp
-            if (appState.lastFetch == currentTimestamp || lastTimestamp >= tomorrowEnd) {
-                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString(), appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd);
+
+
+            if (appState.lastFetch == currentTimestamp || lastTimestamp >= tomorrowEnd||currentTimestamp < stockPriceRelease) {
+                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString(), appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd,currentTimestamp < stockPriceRelease);
                 return;
             }
 
@@ -76,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const lastTimestamp = timestamps.at(-1)?.timestamp;
         if (!lastTimestamp) return false;
 
-        const stockPriceRelease = new Date(now.getFullYear(), now.getMonth(), now.getDate(), stockPriceHour, 0, 0).getTime() / 1000;
+       // const stockPriceRelease = new Date(now.getFullYear(), now.getMonth(), now.getDate(), stockPriceHour, 0, 0).getTime() / 1000;
 
         const hasDataUntilTodayMidnight = lastTimestamp >= tomorrowStart;
         const hasDataUntilTomorrowEnd = lastTimestamp >= tomorrowEnd;
