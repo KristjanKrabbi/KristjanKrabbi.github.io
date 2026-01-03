@@ -15,9 +15,9 @@
 </head>
 <body>
     <h1>Elektrihinna Graafik</h1>
-    <p>Hetke hind:senti/KWh<strong> <span id="currentPrice" class="data">Laadimine...</span></strong> </p>
-    <p>Järgmise tunni hind:senti/KWh <strong><span id="nextHourPrice" class="data">Laadimine...</span></strong> </p>
-    <p>Järgmine odavaim hind on kell: <strong><span id="nextLowestTime">Laadimine...</span></strong></p>
+    <p><span id="firstPriceRow">Hetke hind:senti/KWh</span><strong> <span id="currentPrice" class="data">Laadimine...</span></strong> </p>
+    <p><span id="secondPriceRow">Järgmise tunni hind:senti/KWh</span> <strong><span id="nextHourPrice" class="data">Laadimine...</span></strong> </p>
+    <p><span id="lowestPriceRow">Järgmine odavaim hind on kell:</span> <strong><span id="nextLowestTime">Laadimine...</span></strong></p>
     <!-- <p><strong>Määratud hind (senti/KWh):</strong>
     <input  size=2 type="number" id="priceThreshold" placeholder="Sisesta hind" value="5" /></p> -->
     <!-- <button id="checkThreshold">Kontrolli hinda</button> -->
@@ -40,7 +40,8 @@
         <button id="refresh" class="selectedDay active-btn">praegune</button>
         <button id="tomorrow" class="selectedDay">homme</button>
     </div>
-    
+    <div id="dataSource" class="source-indicator"></div>
+
     <script type="module"  src="script.js"></script>
     <script type="module" src="../krabikuller/firebase.js"></script>
     <script  src="chart.js"></script>
