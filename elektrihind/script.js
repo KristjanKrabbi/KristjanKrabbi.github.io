@@ -45,13 +45,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             if (appState.lastFetch == currentTimestamp || lastTimestamp >= tomorrowEnd||currentTimestamp < stockPriceRelease) {
-                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString(), appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd,currentTimestamp < stockPriceRelease);
+                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString()
+                , appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd,currentTimestamp < stockPriceRelease);
                 return;
             }
 
         }
 
         // 2️⃣ Andmebaas
+        if (ShouldDatabase(currentTimestamp,tomorrowStart)) {
+            
+        
+        
         await GetDatabasePrices(currentHour, currentDate);
 
         if (canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now)) {
@@ -62,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
             showDataSource();
             return;
         }
-
+        }else{return}
         // 3️⃣ Server
         console.log('                       GetStockPrices')
         GetStockPrices(currentHour, currentDate);
@@ -71,11 +76,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     }
+    
     function canUseMemory(currentTimestamp) {
         const lastTimestamp = timestamps.at(-1)?.timestamp;
         return lastTimestamp && lastTimestamp > currentTimestamp;
     }
+    function ShouldDatabase(currentTimestamp,tomorrowStart) {
+        const lastTimestamp = timestamps.at(-1)?.timestamp;
+        if (!lastTimestamp) return true;
+        const hasDataUntilTodayMidnight = lastTimestamp >= tomorrowStart;
+        const fetchedRecently=appState.lastFetch == currentTimestamp;
+         if (fetchedRecently && hasDataUntilTodayMidnight) {
+            console.log('hiljutine päring + andmed kuni südaööni → ÄRA päringut tee')
+            return false;
+        }
 
+    }
     function canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now) {
         const lastTimestamp = timestamps.at(-1)?.timestamp;
         if (!lastTimestamp) return false;
@@ -89,16 +105,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Enne avaldamist + andmed kuni südaööni → ÄRA päringut tee
         if (isBeforeRelease && hasDataUntilTodayMidnight) {
+            console.log('Enne avaldamist + andmed kuni südaööni → ÄRA päringut tee')
             return true;
         }
 
         // Pärast avaldamist:
         // kui homsed andmed on juba olemas → kasuta DB-d
         if (isAfterRelease && hasDataUntilTomorrowEnd) {
+            console.log('kui homsed andmed on juba olemas → kasuta DB-d')
+            return true;
+        }
+        if (appState.lastFetch == currentTimestamp) {
+            console.log('appState.lastFetch == currentTimestamp')
             return true;
         }
 
         // Muudel juhtudel on vaja serverist küsida
+        console.log('Muudel juhtudel on vaja serverist küsida')
         return false;
     }
 
@@ -183,6 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     //console.log(data.data.ee.length)
                     // Salvestame andmed Firebase'i
                     await set(lastHourRef, { hour: currentHour, date: currentDate });
+                    appState.lastFetch = currentTimestamp;
                     const pricesRef = ref(database, 'electricityPrices/current');
                     //await set(pricesRef, { data: data.data.ee });
                     const snapshot = await get(pricesRef);
@@ -489,10 +513,8 @@ document.addEventListener("DOMContentLoaded", function () {
         selectorState.day='tomorrow'
         filterData(tomorrow, timestamps);
         console.log("Andmed mälust tomorrow:", { labels, prices, timestamps });
-
         //document.getElementById('24h').classList.add('active-btn')
-        
-
+        appState.source = 'memory';
         drawChart(labels, prices);
         this.classList.add('active-btn');
 
@@ -507,6 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
         selectorState.selectedHour='24';
         selectorState.day='today'
         filterData(today, timestamps);
+        appState.source = 'memory';
         drawChart(labels, prices);
         this.classList.add('active-btn');
     });
@@ -524,6 +547,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Add 'active-btn' class to the clicked button
             this.classList.add('active-btn');
             filterData(currentTimestamp, timestamps);
+            appState.source = 'memory';
             drawChart(labels, prices);
         });
     });
