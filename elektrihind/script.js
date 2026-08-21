@@ -6,7 +6,8 @@ let timestamps = [];
 let labels = [];
 let prices = [];
 let lastHour = new Date().getHours();
-
+let nextLowestTimestamp=null
+let selectorState={};
 document.addEventListener("DOMContentLoaded", function () {
     let now = new Date();
     let currentTimestamp = new Date(RoundTime(now, 15)).getTime() / 1000;
@@ -23,16 +24,19 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {string} lastFetch-timestamp
      */
     const appState = { source: null, lastFetch: null };
-    const selectorState={day:'refresh',selectedHour:null};
-
+     selectorState={day:'refresh',selectedHour:null};
+    let lastTimestamp = timestamps.at(-1)?.timestamp
+    
     async function fetchElectricityPrices() {
+        now= getTimeContext().now;
         const {
-            now,
+            
             currentHour,
             currentDate,
             tomorrowStart,
             tomorrowEnd
         } = getTimeContext();
+        
         console.log('fetchElectricityPrices ', now.toLocaleString());
 
         // 1️⃣ Mälu
@@ -40,11 +44,13 @@ document.addEventListener("DOMContentLoaded", function () {
             await filterData(currentTimestamp, timestamps);
             appState.source = 'memory';
             drawChart(labels, prices);
-            showDataSource();
-            const lastTimestamp = timestamps.at(-1)?.timestamp
+            //showDataSource();
+            
 
 
-            if (appState.lastFetch == currentTimestamp || lastTimestamp >= tomorrowEnd||currentTimestamp < stockPriceRelease) {
+            if (appState.lastFetch == currentTimestamp ||
+                 lastTimestamp  >= tomorrowEnd||
+                 currentTimestamp< stockPriceRelease) {
                 console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString()
                 , appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd,currentTimestamp < stockPriceRelease);
                 return;
@@ -53,47 +59,59 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // 2️⃣ Andmebaas
-        if (ShouldDatabase(currentTimestamp,tomorrowStart)) {
-            
-        
-        
-        await GetDatabasePrices(currentHour, currentDate);
+        if (ShouldUseDatabase(currentTimestamp, tomorrowStart,currentDate)) {
 
-        if (canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now)) {
+            await GetDatabasePrices(currentHour, currentDate);
+            lastTimestamp = timestamps.at(-1)?.timestamp;
+            if (canUseData(currentTimestamp, tomorrowStart, tomorrowEnd, now)) {
 
-            appState.source = 'database';
-            appState.lastFetch = currentTimestamp;
-            // drawChart(labels, prices);
-            showDataSource();
-            return;
+                appState.source = 'database';
+                appState.lastFetch = currentTimestamp;
+                // drawChart(labels, prices);
+                //showDataSource();
+                return;
+            }
         }
-        }else{return}
         // 3️⃣ Server
         console.log('                       GetStockPrices')
         GetStockPrices(currentHour, currentDate);
         appState.source = 'server';
-        showDataSource();
+        //showDataSource();
 
 
     }
     
     function canUseMemory(currentTimestamp) {
-        const lastTimestamp = timestamps.at(-1)?.timestamp;
+         lastTimestamp = timestamps.at(-1)?.timestamp;
         return lastTimestamp && lastTimestamp > currentTimestamp;
     }
-    function ShouldDatabase(currentTimestamp,tomorrowStart) {
-        const lastTimestamp = timestamps.at(-1)?.timestamp;
+    async function ShouldUseDatabase(currentTimestamp,tomorrowStart,currentDate) {
+        //const lastTimestamp = timestamps.at(-1)?.timestamp;
         if (!lastTimestamp) return true;
         const hasDataUntilTodayMidnight = lastTimestamp >= tomorrowStart;
-        const fetchedRecently=appState.lastFetch == currentTimestamp;
-         if (fetchedRecently && hasDataUntilTodayMidnight) {
-            console.log('hiljutine päring + andmed kuni südaööni → ÄRA päringut tee')
+        const lastFetched=appState.lastFetch ==( currentTimestamp-30*60)
+        //if (!lastFetched) return true
+         if ( hasDataUntilTodayMidnight) {
+             // Hangi viimane salvestatud tund Firebase'ist
+                const snapshot = await get(lastHourRef);
+                let      lastDate = null
+                
+
+                if (snapshot.exists()) {
+                   const lastHourData = snapshot.val();
+                    //const{ hour: dataLastHour, date: lastDate } = lastHourData;
+                     lastDate = lastHourData.date
+                    const dataLastHour = lastHourData.hour
+                    console.log(lastDate + ' ' + dataLastHour)
+                }
+                if (lastDate === currentDate) return true
+            console.log('andmed kuni südaööni → ÄRA päringut tee')
             return false;
         }
-
+        return true
     }
-    function canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now) {
-        const lastTimestamp = timestamps.at(-1)?.timestamp;
+    function canUseData(currentTimestamp, tomorrowStart, tomorrowEnd, now) {
+        //const lastTimestamp = timestamps.at(-1)?.timestamp;
         if (!lastTimestamp) return false;
 
        // const stockPriceRelease = new Date(now.getFullYear(), now.getMonth(), now.getDate(), stockPriceHour, 0, 0).getTime() / 1000;
@@ -104,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isAfterRelease = currentTimestamp >= stockPriceRelease;
 
         // Enne avaldamist + andmed kuni südaööni → ÄRA päringut tee
+        console.log('if Enne avaldamist ' +isBeforeRelease+ ' andmed kuni südaööni '+hasDataUntilTodayMidnight)
         if (isBeforeRelease && hasDataUntilTodayMidnight) {
             console.log('Enne avaldamist + andmed kuni südaööni → ÄRA päringut tee')
             return true;
@@ -161,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 //const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0) / 1000;
                 const { todayStart } = getTimeContext();
                 timestamps = data.data.filter(item => item.timestamp >= todayStart)
+                //JSONCookie(timestamps);
                 await filterData(currentTimestamp, data.data);
 
                 lastHour = currentHour; // Uuendame viimase tunni jälgijat
@@ -211,15 +231,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     //await set(pricesRef, { data: data.data.ee });
                     const snapshot = await get(pricesRef);
                     let combinedData = []
+                    let sorteddata
                     if (snapshot.exists()) {
                         // Olemasolevate andmete käsitlus
                         const existingData = snapshot.val();
                         // Veendume, et andmed on massiivid
                         const existingPrices = Array.isArray(existingData.data) ? existingData.data : [];
                         const newPrices = Array.isArray(data.data.ee) ? data.data.ee : [];
+                        const cleanedExisting = existingPrices.filter(p => p && typeof p.timestamp !== "undefined");
+                       // const yesterday =  new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0).getTime() / 1000,
+                        
+                     //     sorteddata  = existingData.data.filter(item => item.timestamp >= yesterday);
                         // Kombineerime massiivid ja eemaldame võimalikud duplikaadid
-                        combinedData = [...existingPrices, ...newPrices].reduce((unique, item) => {
-                            if (!unique.some(entry => entry.timestamp === item.timestamp)) {
+                        combinedData = [...cleanedExisting, ...newPrices].reduce((unique, item) => {
+                            if (!unique.some(entry => entry?.timestamp === item?.timestamp)) {
                                 unique.push(item);
                             }
                             return unique;
@@ -270,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function loadUserPreferences() {
-        console.log('loadUserPreferences')
+        //console.log('loadUserPreferences')
         let userPreferences = getCookie('UserPreferences')
         if (!userPreferences) {
             userPreferences = threshold
@@ -280,26 +305,26 @@ document.addEventListener("DOMContentLoaded", function () {
         threshold = userPreferences;
         let SelectedHours = SelectedHourscookie('', get)
         if (!SelectedHours) {
-            console.log('SelectedHours=', SelectedHours)
+            //console.log('SelectedHours=', SelectedHours)
             SelectedHourscookie('24', set)
             SelectedHours='24'
         }
         document.getElementById(SelectedHours + 'h').classList.add('active-btn')
         selectorState.selectedHour=SelectedHours
-        console.log(SelectedHourscookie('', get) + 'h')
+       // console.log(SelectedHourscookie('', get) + 'h')
 
     }
 
 
 
     document.getElementById('priceThreshold').addEventListener('change', async () => {
-        console.log('priceThreshold change')
+        //console.log('priceThreshold change')
         threshold = (document.getElementById('priceThreshold').value);
         if (isNaN(parseFloat(threshold))) {
             alert("Palun sisesta kehtiv number!");
             return;
         }
-        console.log('priceThreshold change', threshold)
+        //console.log('priceThreshold change', threshold)
 
 
         setCookie('UserPreferences', threshold, 365)
@@ -334,8 +359,8 @@ document.addEventListener("DOMContentLoaded", function () {
         let belowThresholdIndex = -1;
         let belowThreshold = "Pole saadaval";
         let bTTime = '' 
-        let btIndex=0
-        console.log("minIndex index is " + minIndex)
+        
+       // console.log("minIndex index is " + minIndex)
         if (minIndex !== 0) {
             console.log("minIndex index is not 0")
             nextMinPrice = minPrice;
@@ -368,11 +393,11 @@ document.addEventListener("DOMContentLoaded", function () {
         let firstPriceRowPrice=''
         if (selectorState.day=='tomorrow'||selectorState.day=='today') {
             if (selectorState.selectedHour=='24') {
-               lowestPriceRow='Päeva odavaim hind on kell:' 
+               lowestPriceRow='Päeva odavaim hind on ' 
            secondPriceRow='Päeva kõrgeim hind:senti/KWh'
            firstPriceRow='Päeva keskmine hind:senti/KWh' 
             }else{
-                lowestPriceRow='Ajavahemiku odavaim hind on kell:' 
+                lowestPriceRow='Ajavahemiku odavaim hind on ' 
            secondPriceRow='Ajavahemiku kõrgeim hind:senti/KWh'
            firstPriceRow='Ajavahemiku keskmine hind:senti/KWh' 
         }
@@ -381,7 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
            firstPriceRowPrice=midPrice.toFixed(2);
 
         } else {
-          lowestPriceRow='Järgmine odavaim hind on kell:'  
+          lowestPriceRow='Järgmine odavaim hind on '  
           secondPriceRow='Järgmise tunni hind:senti/KWh'
           firstPriceRow='Hetke hind:senti/KWh'
           secondPriceRowPrice=prices[1].toFixed(2)
@@ -419,8 +444,12 @@ document.addEventListener("DOMContentLoaded", function () {
          }); */
         // Kuvame järgmise madalaima hinna kellaaja
         const nextLowestTime = labels[nextMinIndex];
-        console.log("nextLowestTime=" + nextLowestTime)
-        document.getElementById('nextLowestTime').textContent = nextLowestTime + " hind: " + nextMinPrice.toFixed(2) + " senti/KWh" || "Pole saadaval";
+        nextLowestTimestamp=ToTimestamp (nextLowestTime);
+
+        console.log("nextLowestTime=" + nextLowestTime+' '+nextLowestTimestamp)
+        document.getElementById('nextLowestTime').textContent =' kell: '+ nextLowestTime  || "Pole saadaval";
+        document.getElementById('nextLowestPrice').textContent =  " hind: " + nextMinPrice.toFixed(2) + " senti/KWh " || "Pole saadaval";
+
         if (chart) {
             chart.destroy();
         }
@@ -474,17 +503,24 @@ document.addEventListener("DOMContentLoaded", function () {
                             label: function (context) {
                                 const label = context.dataset.label || '';
                                 const value = context.raw;
+                                //context.Date=new Date( ToTimestamp(label)-now);
+                                //const time=context.Date;
+                                //console.log('label: '+context.label+' now: ',now)
+                                let {hours,minutes,seconds}=getTimeTo(context.label)
+                                if (seconds>30)minutes=minutes+=1;
+
+                                const time=( hours+ ':' + minutes);
                                 return context.dataIndex === minIndex
 
-                                    ? `${label} ${value.toFixed(2)} s/KWh (madalaim)`
-                                    : `${label} ${value.toFixed(2)} s/KWh`;
+                                    ? `${label} ${value.toFixed(2)} s/KWh (madalaim) `+time
+                                    : `${label} ${value.toFixed(2)} s/KWh`+` \n` +time;
                             }
                         }
                     }
                 }
             }
         });
-        showDataSource();
+        //showDataSource();
 
     }
     const selector = document.getElementsByClassName("selectedDay");
@@ -492,6 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('refresh').addEventListener('click', function (e) {
         Array.from(selector).forEach(btn => btn.classList.remove('active-btn'));
         now = new Date();
+         //JSONCookie(timestamps);
         //lastHour = now.getHours()
         //currentTimestamp = new Date(RoundTime(now, 15)).getTime() / 1000
         currentTimestamp = getTimeContext().currentTimestamp
@@ -576,13 +613,20 @@ document.addEventListener("DOMContentLoaded", function () {
         el.textContent = map[appState.source] || '';
     }
 
-    console.log('end line 250 threshold=' + threshold)
+   // console.log('end line 250 threshold=' + threshold)
     window.addEventListener('load', loadUserPreferences());
     //loadUserPreferences()
+
+    
     fetchElectricityPrices();  // Lae hinnad ja joonista graafik
+    //setInterval(fetchElectricityPrices(), 5000); // Uuendab hinda iga x minuti tagant
+   
+
 });
 
-/**ymardab alla 'step' sammuga */
+/**ymardab alla 'step' sammuga 
+ * @param {Date} now 
+*/
 function RoundTime(now, step) {
 
     // Get current minutes
@@ -592,8 +636,22 @@ function RoundTime(now, step) {
 
     now.setMinutes(roundedMinutes, 0, 0);
 
-    console.log("Rounded time:", now.toTimeString().slice(0, 5)); // HH:MM format
+    //console.log("Rounded time:", now.toTimeString().slice(0, 5)); // HH:MM format
     return now
+}
+/**
+ * 
+ * @param {Array} data 
+ */
+function JSONCookie(data) {
+   //const obj = {...data};
+//const map = new Map(data)
+const map  = data.slice(0,48)
+    const obj = Object.fromEntries(data);
+    let dataJSON = JSON.stringify(map);
+setCookie('timestamps', dataJSON, 30)
+// Save JSON string to cookie
+//document.cookie = `userData=${dataJSON}; SameSite=Lax`;
 }
 
 function UserPreferencescookie(value, getSet) {
@@ -679,3 +737,59 @@ function getTimeContext() {
         tomorrowEnd: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 0, 0, 0).getTime() / 1000
     };
 }
+/**
+ * 
+ * @param {string} time - HH:MM
+ */
+function ToTimestamp(time) {
+    const now = new Date();
+    const [hrs, mins] = time.split(':')
+    
+    let timestamp = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hrs, mins, 0)
+    if (timestamp<RoundTime(now,15)) {
+        const today=now.getDate();
+        return timestamp.setDate(today+1)/1000
+    }
+    return timestamp/ 1000
+}
+/**
+ * 
+ * @param {*} time - HH:MM
+ */
+function getTimeTo(time) {
+    const now = new Date();
+    const timeTo=new Date( ToTimestamp(time)*1000-now);
+    return{
+         hours : timeTo.getUTCHours(),
+        minutes : timeTo.getMinutes(),
+        seconds : timeTo.getSeconds()
+    };
+}
+/**
+ * 
+ * @param {Date} countDownDate 
+ */
+function updateClock() {
+const now = new Date();
+const countdownTime=new Date( nextLowestTimestamp*1000-now);
+//let hours = now.getHours();
+//let minutes = now.getMinutes();
+//let seconds = now.getSeconds();
+if (labels.length>0  && selectorState.day=='refresh') {
+    
+
+if ((RoundTime(now, 15)).getTime()!==ToTimestamp( labels.at(0))*1000){
+     document.getElementById('refresh').click()}
+}
+let hours = countdownTime.getUTCHours();
+let minutes = countdownTime.getMinutes();
+let seconds = countdownTime.getSeconds();
+// Format time to always show two digits
+hours = ("0" + hours).slice(-2);
+minutes = ("0" + minutes).slice(-2);
+seconds = ("0" + seconds).slice(-2);
+
+document.getElementById("clock").textContent = `${hours}:${minutes}:${seconds}`;
+}
+    setInterval(updateClock, 1000);
+    updateClock();
