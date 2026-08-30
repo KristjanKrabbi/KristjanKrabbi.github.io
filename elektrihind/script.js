@@ -220,24 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
     }
-    /*  async function filterData(currentTimestamp, data) {
-         const selectedHours=selectorState.selectedHour;
-         const filteredData = data.filter(item => item.timestamp >= currentTimestamp);
-         if (selectorState.timeInteval==4) {
-             
-             filterData.forEach(element => {
-                 
-             });
-         }
-         labels = filteredData.map(item => {
-             const date = new Date(item.timestamp * 1000);// Muudame millisekunditeks
-             let minutes = date.getMinutes();
-             if (minutes == 0)  minutes = '00';
-             return (date.getHours() + ':' + minutes);
-         }).slice(0, selectedHours * 4);
-         prices = filteredData.map(item => item.price * 0.124).slice(0, selectedHours * 4);
-        
-     } */
+   
     async function filterData(currentTimestamp, data) {
 
         const selectedHours = selectorState.selectedHour;
@@ -537,8 +520,8 @@ document.addEventListener("DOMContentLoaded", function () {
         currentTimestamp = tomorrow;
         //lastHour=0
 
-        activeButtonsClassList(selectedHoursButtons, '24h');
-        selectorState.selectedHour = '24';
+        activeButtonsClassList(selectedHoursButtons, (selectorState.day == 'tomorrow')? selectorState.selectedHour+'h':'24h');
+        selectorState.selectedHour = (selectorState.day == 'tomorrow')? selectorState.selectedHour:'24';
         selectorState.day = 'tomorrow'
         filterData(tomorrow, timestamps);
         // console.log("Andmed mälust tomorrow:", { labels, prices, timestamps });
@@ -554,8 +537,8 @@ document.addEventListener("DOMContentLoaded", function () {
         today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0) / 1000;
         currentTimestamp = today;
 
-        activeButtonsClassList(selectedHoursButtons, '24h');
-        selectorState.selectedHour = '24';
+        activeButtonsClassList(selectedHoursButtons, (selectorState.day == 'today')? selectorState.selectedHour+'h':'24h');
+        selectorState.selectedHour =(selectorState.day == 'today')? selectorState.selectedHour:'24';
         selectorState.day = 'today'
         filterData(today, timestamps);
         appState.source = 'memory';
