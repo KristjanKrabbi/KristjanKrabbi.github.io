@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now)) {
 
                 appState.source = 'database';
-                appState.lastFetch = currentTimestamp;
+                //appState.lastFetch = currentTimestamp;
 
                 return;
             }
