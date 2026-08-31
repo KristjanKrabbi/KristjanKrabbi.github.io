@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const lastTimestamp = timestamps.at(-1)?.timestamp
 
             if (appState.lastFetch == currentTimestamp || lastTimestamp >= tomorrowEnd || currentTimestamp < stockPriceRelease) {
-                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + 'lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString()
+                console.log('andmed mälus piisavad. viimane timestamps: ' + new Date(lastTimestamp * 1000).toLocaleString() + ' lastFetch ' + new Date(appState.lastFetch * 1000).toLocaleString()
                     , appState.lastFetch == currentTimestamp, lastTimestamp >= tomorrowEnd, currentTimestamp < stockPriceRelease);
                 return;
             }
@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('hiljutine päring + andmed kuni südaööni → ÄRA päringut tee')
             return false;
         }
+        return true;
 
     }
     function canUseDatabase(currentTimestamp, tomorrowStart, tomorrowEnd, now) {
@@ -146,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const API_URL = "https://us-central1-krabikuller.cloudfunctions.net/fetchElectricityPrices";
             // const API_URL = `https://corsproxy.io/?https://dashboard.elering.ee/api/nps/price`;
+            
 
             const start = new Date(now.setMinutes(0, 0, 0)).toISOString();
             // Järgmise päeva kuupäeva ja südaöö arvutamine
